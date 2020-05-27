@@ -1,5 +1,5 @@
 CREATE TABLE sessions (
-    id INTEGER PRIMARY KEY, 
+    id TEXT PRIMARY KEY, 
     create_date INTEGER NOT NULL, 
     update_date INTEGER, 
     name TEXT NOT NULL, 
@@ -9,7 +9,7 @@ CREATE TABLE sessions (
 );
 
 CREATE TABLE tracks (
-    id INTEGER PRIMARY KEY, 
+    id TEXT PRIMARY KEY, 
     create_date INTEGER NOT NULL, 
     update_date INTEGER,
     person TEXT, 
