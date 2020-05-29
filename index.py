@@ -1,5 +1,5 @@
 from flask import Flask
-from database import print_records
+from db import print_records
 
 app = Flask(__name__)
 

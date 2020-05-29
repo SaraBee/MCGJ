@@ -1,65 +1,61 @@
 import sqlite3
 import json
 import click
-from flask import Flask, current_app, g
+from flask import Flask, g
 from flask.cli import with_appcontext
 
 DATABASE = "mcg.db"
 app = Flask(__name__)
 
-def get_db():
-    db = getattr(g, "_database", None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        # TODO: Delete this if sqlite3.row exists
-        # def dict_factory(cursor, row):
-        #     d = {}
-        #     for idx, col in enumerate(cursor.description): 
-        #         d[col[0]] = row[idx]
-        #     return d
-        db.row_factory = sqlite3.Row
-    return db
+
+def connect():
+    connection = getattr(g, "_database", None)
+    if connection is None:
+        connection = g._database = sqlite3.connect(DATABASE)
+        connection.row_factory = sqlite3.Row
+    return connection
 
 
 @app.teardown_appcontext
 def close_connection(exception):
-    db = getattr(g, "_database", None)
-    if db is not None:
-        db.close()
+    connection = getattr(g, "_database", None)
+    if connection is not None:
+        connection.close()
 
 
-def init_db():
+def init():
     with app.app_context():
-        db = get_db()
+        connection = connect()
         with app.open_resource("init-db.sql") as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+            connection.cursor().executescript(f.read())
+        connection.commit()
+
 
 @click.command("init-db")
 @with_appcontext
-def init_db_command():
+def init_command():
     """DESTROY existing data and create a new table."""
-    init_db()
+    init()
     click.echo("Initialized the database.")
 
 
-def query_db(query, args=(), one=False):
-    cursor = get_db().execute(query, args)
+def query(query, args=(), one=False):
+    cursor = connect().execute(query, args)
     results = cursor.fetchall()
     cursor.close()
     return (results[0] if results else None) if one else results
 
 
-def update_db(query, args=()):
-    cursor = get_db().cursor()
-
-
-
+def execute(query, args=()):
+    connection = connect()
+    connection.cursor.execute(query, args)
+    connection.commit()
+    connection.close()
 
 
 def print_records(table: str) -> str:
     """For debugging"""
-    db = get_db()
+    db = connect()
     cursor = db.cursor()
 
     command = """
@@ -71,10 +67,6 @@ def print_records(table: str) -> str:
         results.append(row)
 
     return(json.dumps(results))
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -89,12 +81,12 @@ if __name__ == "__main__":
 
     cursor = db.cursor()
 
-    command = """  
-    SELECT * FROM tracks  
+    command = """
+    SELECT * FROM tracks
     """
 
     tracks = []
     for track in cursor.execute(command):
         tracks.append(track)
-    
+
     print(tracks)
