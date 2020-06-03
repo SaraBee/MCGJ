@@ -81,4 +81,3 @@ class Session(SQLite3BackedObject):
             self.current_round = 1
 
 
-
