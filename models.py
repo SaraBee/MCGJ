@@ -35,7 +35,7 @@ class SQLite3BackedObject:
         table = properties.pop("_table")
         columns = ', '.join(properties.keys())
         placeholders = ', '.join(['?'] * len(properties))
-        query = "INSERT INTO {}({}) VALUES({})".format(self._table, columns, placeholders)
+        query = "INSERT INTO {}({}) VALUES({})".format(table, columns, placeholders)
 
         # Run our query.
         values = list(self.__dict__.values())
