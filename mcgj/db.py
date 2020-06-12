@@ -11,7 +11,9 @@ def connect():
     connection = getattr(g, "_database", None)
     if connection is None:
         connection = g._database = sqlite3.connect(current_app.config["DATABASE"])
-        connection.row_factory = sqlite3.Row
+        def make_dicts(cursor, row):
+            return dict((cursor.description[idx][0], value) for idx, value in enumerate(row))
+        connection.row_factory = make_dicts
     return connection
 
 

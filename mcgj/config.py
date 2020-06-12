@@ -1,1 +1,1 @@
-DATABASE = "mcg.db"
+DATABASE = "mcgj.db"

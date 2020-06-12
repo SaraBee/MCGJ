@@ -19,5 +19,7 @@ def client():
     os.unlink(app.config["DATABASE"])
 
 
-def test_something_simple(client):
-    assert 1 == 0
+def test_init_db(client):
+    with mcgj.app.app_context():
+        result = mcgj.db.query("SELECT name FROM sqlite_master WHERE type='table';")
+    assert result == [{'name': 'sessions'}, {'name': 'tracks'}]
