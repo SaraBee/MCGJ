@@ -1,6 +1,7 @@
 import uuid
 from . import db
 from copy import copy
+import datetime
 
 # This track object should be initialized with a sqlite3.Row.
 # There should be accessors for properties, and setters.
@@ -16,17 +17,17 @@ class SQLite3BackedObject:
         self._table = table
 
     def update(self):
-        # Build our query string.
+        # Build our command string.
         # TODO: Perhaps logic for update date goes here?
         properties = copy(self.__dict__)
         table = properties.pop("_table")
         id = properties.pop("id")
         columns = ", ".join([key + " = ?" for key in properties])
-        query = "UPDATE {} SET {} where id = {}".format(table, columns, id)
+        sql = "UPDATE {} SET {} where id = ?".format(table, columns, id)
+        values = list(properties.values()) + [id]
 
-        # Run our query.
-        values = list(properties.values())
-        db.execute(query, values)
+        # Run our command.
+        db.execute(sql, values)
 
     def insert(self):
         # Build our query string.
@@ -35,49 +36,51 @@ class SQLite3BackedObject:
         table = properties.pop("_table")
         columns = ', '.join(properties.keys())
         placeholders = ', '.join(['?'] * len(properties))
-        query = "INSERT INTO {}({}) VALUES({})".format(table, columns, placeholders)
+        sql = "INSERT INTO {}({}) VALUES({})".format(table, columns, placeholders)
+        values = list(properties.values())
 
         # Run our query.
-        values = list(self.__dict__.values())
-        db.execute(query, values)
+        db.execute(sql, values)
 
 
 class Track(SQLite3BackedObject):
     def __init__(self, id=None, round_number=None):
         super().__init__(table="tracks")
         if id is not None:
-            row = db.query("SELECT * FROM tracks WHERE id = ?", id, one=True)
-            self.id = row.id
-            self.create_date = row.create_date
-            self.update_date = row.update_date
-            self.person = row.person
-            self.track_name = row.track_name
-            self.track_url = row.track_url
-            self.session_id = row.session_id
-            self.done = row.done
-            self.round_number = row.round_number
-            self.round_position = row.round_position
+            row = db.query("SELECT * FROM tracks WHERE id = ?", [id], one=True)
+            self.id = row["id"]
+            self.create_date = row["create_date"]
+            self.update_date = row["update_date"]
+            self.person = row["person"]
+            self.track_name = row["track_name"]
+            self.track_url = row["track_url"]
+            self.session_id = row["session_id"]
+            self.done = row["done"]
+            self.round_number = row["round_number"]
+            self.round_position = row["round_position"]
         else:
             # TODO: More logic in here about new objects?
             self.id = str(uuid.uuid4())
-            self.round_number = round_number
+            self.create_date = datetime.datetime.now()
+            if round_number is not None:
+                self.round_number = round_number
 
 
 class Session(SQLite3BackedObject):
     def __init__(self, id=None):
         super().__init__(table="sessions")
         if id is not None:
-            row = db.query("SELECT * FROM sessions WHERE id = ?", id, one=True)
-            self.id = row.id
-            self.create_date = row.create_date
-            self.update_date = row.update_date
-            self.name = row.name
-            self.date = row.date
-            self.spotify_url = row.spotify_url
-            self.current_round = row.current_round
+            row = db.query("SELECT * FROM sessions WHERE id = ?", [id], one=True)
+            self.id = row["id"]
+            self.create_date = row["create_date"]
+            self.update_date = row["update_date"]
+            self.name = row["name"]
+            self.date = row["date"]
+            self.spotify_url = row["spotify_url"]
+            self.current_round = row["current_round"]
         else:
             # TODO: More logic in here about new objects, e.g. create_date.
             self.id = str(uuid.uuid4())
+            self.create_date = datetime.datetime.now()
             self.current_round = 1
-
 

@@ -1,17 +1,17 @@
 CREATE TABLE sessions (
     id TEXT PRIMARY KEY, 
-    create_date INTEGER NOT NULL, 
-    update_date INTEGER, 
+    create_date TIMESTAMP NOT NULL, 
+    update_date TIMESTAMP, 
     name TEXT NOT NULL, 
-    date INTEGER, 
+    date DATE, 
     spotify_url TEXT, 
     current_round INTEGER
 );
 
 CREATE TABLE tracks (
     id TEXT PRIMARY KEY, 
-    create_date INTEGER NOT NULL, 
-    update_date INTEGER,
+    create_date TIMESTAMP NOT NULL, 
+    update_date TIMESTAMP,
     person TEXT, 
     track_name TEXT, 
     track_url TEXT, 

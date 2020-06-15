@@ -10,14 +10,14 @@ from flask import current_app
 def connect():
     connection = getattr(g, "_database", None)
     if connection is None:
-        connection = g._database = sqlite3.connect(current_app.config["DATABASE"])
+        connection = g._database = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
         def make_dicts(cursor, row):
             return dict((cursor.description[idx][0], value) for idx, value in enumerate(row))
         connection.row_factory = make_dicts
+        # connection.row_factory = sqlite3.Row
     return connection
 
 
-# @current_app.teardown_appcontext
 def close_connection(exception):
     connection = getattr(g, "_database", None)
     if connection is not None:
@@ -34,24 +34,26 @@ def init():
 
 @click.command("init-db")
 @with_appcontext
-def init_command():
+def init_db_command():
     """DESTROY existing data and create a new table."""
     init()
     click.echo("Initialized the database.")
 
 
-def query(query, args=(), one=False):
-    cursor = connect().execute(query, args)
+def query(sql, args=(), one=False):
+    cursor = connect().execute(sql, args)
     results = cursor.fetchall()
-    cursor.close()
+    # I think I don't have to close the connection because it
+    # happens at appcontext_teardown.
+    # cursor.close()
     return (results[0] if results else None) if one else results
 
 
-def execute(query, args=()):
+def execute(sql, args=()):
     connection = connect()
-    connection.cursor.execute(query, args)
+    connection.cursor().execute(sql, args)
     connection.commit()
-    connection.close()
+    # connection.close()
 
 
 def print_records(table: str) -> str:
@@ -70,8 +72,15 @@ def print_records(table: str) -> str:
     return(json.dumps(results))
 
 
+def init_app(app):
+    """This is called in create_app() to register our functions with the application, because in this pattern, the decorators like @current_app.teardown_appcontext don't work."""
+    app.teardown_appcontext(close_connection)
+    app.cli.add_command(init_db_command)
+
+
+
 if __name__ == "__main__":
-    db = sqlite3.connect(DATABASE)
+    db = sqlite3.connect(current_app.config["DATABASE"])
 
     def dict_factory(cursor, row):
         d = {}
