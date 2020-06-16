@@ -34,8 +34,8 @@ class SQLite3BackedObject:
         # TODO: Perhaps logic for create date goes here?
         properties = copy(self.__dict__)
         table = properties.pop("_table")
-        columns = ', '.join(properties.keys())
-        placeholders = ', '.join(['?'] * len(properties))
+        columns = ", ".join(properties.keys())
+        placeholders = ", ".join(["?"] * len(properties))
         sql = "INSERT INTO {}({}) VALUES({})".format(table, columns, placeholders)
         values = list(properties.values())
 
@@ -83,4 +83,3 @@ class Session(SQLite3BackedObject):
             self.id = str(uuid.uuid4())
             self.create_date = datetime.datetime.now()
             self.current_round = 1
-
