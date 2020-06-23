@@ -24,7 +24,17 @@ def render_session(session_id):
     rows_query = "SELECT * FROM tracks WHERE session_id = ?"
     rows = db.query(sql=rows_query, args=session_id)
     tracks = [Track(row) for row in rows]
-    return render_template("session_detail.html", session=session, tracks=tracks)
+
+    tracks_dict = {}
+    for round_num in range(1, session.current_round + 1):
+        round_tracks = [track for track in tracks if track.round_number == round_num]
+        tracks_dict[round_num] = {
+            "played": sorted([track for track in round_tracks if track.done is 1], key=lambda track: track.round_position),
+            "unplayed": [track for track in round_tracks if track.done is 0]
+        }
+    print(tracks_dict)
+
+    return render_template("session_detail.html", session=session, tracks_dict=tracks_dict)
 
 
 @bp.route("/update_track")

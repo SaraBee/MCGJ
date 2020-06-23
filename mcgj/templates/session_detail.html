@@ -3,9 +3,16 @@
 
 {% block content %}
 <h1>Tracks</h1>
-<ul>
-{% for track in tracks %}
-    <li>{{track.person}} — <a href={{track.track_url}}>{{track.track_name}}</a></li>
-</ul>    
+{% for round_num, round_tracks in tracks_dict.items() %}
+    <h2>Round {{round_num}}</h2>
+    {% for track in round_tracks["played"] %}
+        {% with track=track %} {% include "done_track_row.html" %} {% endwith %}
+    {% endfor %}
+    {% if round_tracks["unplayed"]|length > 0 %}
+        <h3>Unplayed</h3>
+        {% for track in round_tracks["unplayed"] %}
+            {% with track=track %} {% include "pending_track_row.html" %} {% endwith %}
+        {% endfor %}
+    {% endif %}
 {% endfor %}
 {% endblock %}
