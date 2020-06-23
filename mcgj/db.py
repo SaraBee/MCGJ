@@ -4,15 +4,18 @@ import click
 from flask import Flask, g
 from flask.cli import with_appcontext
 from flask import current_app
-
+from .models import Track, Session
+import datetime
 
 
 def connect():
     connection = getattr(g, "_database", None)
     if connection is None:
         connection = g._database = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
+
         def make_dicts(cursor, row):
             return dict((cursor.description[idx][0], value) for idx, value in enumerate(row))
+
         connection.row_factory = make_dicts
         # connection.row_factory = sqlite3.Row
     return connection
@@ -24,7 +27,7 @@ def close_connection(exception):
         connection.close()
 
 
-def init():
+def init_db():
     with current_app.app_context():
         connection = connect()
         with current_app.open_resource("init-db.sql") as f:
@@ -36,11 +39,73 @@ def init():
 @with_appcontext
 def init_db_command():
     """DESTROY existing data and create a new table."""
-    init()
+    init_db()
     click.echo("Initialized the database.")
 
 
+def init_db_test():
+    with current_app.app_context():
+        connection = connect()
+        with current_app.open_resource("init-db.sql") as f:
+            connection.cursor().executescript(f.read().decode("utf8"))
+        connection.commit()
+
+        sess = Session()
+        sess.name = "Test Session 2020-06-23"
+        sess.date = datetime.date.today()
+        sess.current_round = 2
+        sess.insert()
+
+        track1 = Track()
+        track1.session_id = sess.id
+        track1.round_number = 1
+        track1.round_position = 1
+        track1.person = "Toph Allen"
+        track1.track_name = "AceMo — Heaven (2020 Mix)"
+        track1.track_url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
+        track1.done = True
+        track1.insert()
+
+        track2 = Track()
+        track2.session_id = sess.id
+        track2.round_number = 1
+        track2.round_position = 2
+        track2.person = "Sara Bobo"
+        track2.track_name = "MissDat†Booty†"
+        track2.track_url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
+        track2.done = True
+        track2.insert()
+
+        track3 = Track()
+        track3.session_id = sess.id
+        track3.round_number = 2
+        track3.round_position = 1
+        track3.person = "Toph Allen"
+        track3.track_name = "HVL — K01B"
+        track3.track_url = "https://kiyadama.bandcamp.com/track/k01b"
+        track3.done = True
+        track3.insert()
+
+        track4 = Track()
+        track4.session_id = sess.id
+        track4.round_number = 2
+        track4.person = "Sara Bobo"
+        track4.done = False
+        track4.insert()
+
+
+@click.command("init-db-test")
+@with_appcontext
+def init_db_test_command():
+    """DESTROY existing data and create a new table with testing data.."""
+    init_db_test()
+    click.echo("Initialized the database with some dummy data.")
+
+
 def query(sql, args=(), one=False):
+    print(sql)
+    print(args)
+    print(one)
     cursor = connect().execute(sql, args)
     results = cursor.fetchall()
     # I think I don't have to close the connection because it
@@ -50,10 +115,12 @@ def query(sql, args=(), one=False):
 
 
 def execute(sql, args=()):
+    """Returns lastrowid, which is None if this is not a single insert."""
     connection = connect()
-    connection.cursor().execute(sql, args)
+    cursor = connection.cursor()
+    cursor.execute(sql, args)
     connection.commit()
-    # connection.close()
+    return cursor.lastrowid
 
 
 def print_records(table: str) -> str:
@@ -76,7 +143,7 @@ def init_app(app):
     """This is called in create_app() to register our functions with the application, because in this pattern, the decorators like @current_app.teardown_appcontext don't work."""
     app.teardown_appcontext(close_connection)
     app.cli.add_command(init_db_command)
-
+    app.cli.add_command(init_db_test_command)
 
 
 if __name__ == "__main__":

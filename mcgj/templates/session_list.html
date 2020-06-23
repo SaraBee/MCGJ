@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}MCGJ!{% endblock %}
+
+{% block content %}
+<h1>Sessions</h1>
+<ul>
+{% for session in sessions %}
+    <li><a href=/sessions/{{session.id}}>{{session.name}}</a></li>
+</ul>    
+{% endfor %}
+{% endblock %}

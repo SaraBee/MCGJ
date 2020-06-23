@@ -11,14 +11,33 @@ import datetime
 # Track contains ALL the database logic
 
 
+def scrub(table_name):
+    return ''.join( chr for chr in table_name if chr.isalnum() )
+# scrub('); drop tables --')  # returns 'droptables'
+
+
 class SQLite3BackedObject:
-    def __init__(self, id=None, table=None):
-        self.id = id
-        self._table = table
+    def __init__(self, *args, with_id=None, table, **kwargs):
+        print("printing with_id")
+        print(with_id)
+        self._table = scrub(table)
+        if with_id is not None:
+            row = db.query(
+                f"SELECT * FROM {self._table} WHERE id = ?",
+                [with_id],
+                one=True
+            )
+            # Add the query row to the *args,
+            # which we treat as dictionaries next.
+            args += (row, )
+        for row in args:
+            for key in row:
+                setattr(self, key, row[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
     def update(self):
-        # Build our command string.
-        # TODO: Perhaps logic for update date goes here?
+        self.update_date = datetime.datetime.now()
         properties = copy(self.__dict__)
         table = properties.pop("_table")
         id = properties.pop("id")
@@ -30,8 +49,10 @@ class SQLite3BackedObject:
         db.execute(sql, values)
 
     def insert(self):
-        # Build our query string.
-        # TODO: Perhaps logic for create date goes here?
+        if hasattr(self, "id"):
+            raise AttributeError("This object already has an id, so I assume it already exists in the database.")
+        self.create_date = datetime.datetime.now()
+        self.update_date = datetime.datetime.now()
         properties = copy(self.__dict__)
         table = properties.pop("_table")
         columns = ", ".join(properties.keys())
@@ -39,47 +60,15 @@ class SQLite3BackedObject:
         sql = "INSERT INTO {}({}) VALUES({})".format(table, columns, placeholders)
         values = list(properties.values())
 
-        # Run our query.
-        db.execute(sql, values)
+        # Give ourselves the id of the created object.
+        self.id = db.execute(sql, values)
 
 
 class Track(SQLite3BackedObject):
-    def __init__(self, id=None, round_number=None):
-        super().__init__(table="tracks")
-        if id is not None:
-            row = db.query("SELECT * FROM tracks WHERE id = ?", [id], one=True)
-            self.id = row["id"]
-            self.create_date = row["create_date"]
-            self.update_date = row["update_date"]
-            self.person = row["person"]
-            self.track_name = row["track_name"]
-            self.track_url = row["track_url"]
-            self.session_id = row["session_id"]
-            self.done = row["done"]
-            self.round_number = row["round_number"]
-            self.round_position = row["round_position"]
-        else:
-            # TODO: More logic in here about new objects?
-            self.id = str(uuid.uuid4())
-            self.create_date = datetime.datetime.now()
-            if round_number is not None:
-                self.round_number = round_number
+    def __init__(self, *args, with_id=None, **kwargs):
+        super().__init__(*args, with_id=with_id, table="tracks", **kwargs)
 
 
 class Session(SQLite3BackedObject):
-    def __init__(self, id=None):
-        super().__init__(table="sessions")
-        if id is not None:
-            row = db.query("SELECT * FROM sessions WHERE id = ?", [id], one=True)
-            self.id = row["id"]
-            self.create_date = row["create_date"]
-            self.update_date = row["update_date"]
-            self.name = row["name"]
-            self.date = row["date"]
-            self.spotify_url = row["spotify_url"]
-            self.current_round = row["current_round"]
-        else:
-            # TODO: More logic in here about new objects, e.g. create_date.
-            self.id = str(uuid.uuid4())
-            self.create_date = datetime.datetime.now()
-            self.current_round = 1
+    def __init__(self, *args, with_id=None, **kwargs):
+        super().__init__(*args, with_id=with_id, table="sessions", **kwargs)

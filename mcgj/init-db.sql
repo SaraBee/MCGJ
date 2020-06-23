@@ -1,5 +1,11 @@
+-- Initialize the database.
+-- Drop any existing data and create empty tables.
+
+DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS tracks;
+
 CREATE TABLE sessions (
-    id TEXT PRIMARY KEY, 
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     create_date TIMESTAMP NOT NULL, 
     update_date TIMESTAMP, 
     name TEXT NOT NULL, 
@@ -9,7 +15,7 @@ CREATE TABLE sessions (
 );
 
 CREATE TABLE tracks (
-    id TEXT PRIMARY KEY, 
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
     create_date TIMESTAMP NOT NULL, 
     update_date TIMESTAMP,
     person TEXT, 

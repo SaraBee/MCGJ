@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from mcgj import db, session_view
+from mcgj import db, mcgj
 
 
 def create_app(test_config=None):
@@ -24,6 +24,6 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    app.register_blueprint(session_view.bp)
+    app.register_blueprint(mcgj.bp)
 
     return app

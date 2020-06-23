@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{session.name}}{% endblock %}
+
+{% block content %}
+<h1>Tracks</h1>
+<ul>
+{% for track in tracks %}
+    <li>{{track.person}} — <a href={{track.track_url}}>{{track.track_name}}</a></li>
+</ul>    
+{% endfor %}
+{% endblock %}
