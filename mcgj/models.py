@@ -18,8 +18,7 @@ def scrub(table_name):
 
 class SQLite3BackedObject:
     def __init__(self, *args, with_id=None, table, **kwargs):
-        print("printing with_id")
-        print(with_id)
+        print("Initializing object with ID '{}' from table {}".format(with_id, table))
         self._table = scrub(table)
         if with_id is not None:
             row = db.query(

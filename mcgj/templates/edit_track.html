@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Track{% endblock %}
+
+{% block content %}
+<form method="POST" action="/update_track/{{track.id}}">
+    Person Name: <input type="text" name="person" value="{{track.person}}" required><br>
+    Track Title (& Artist): <input type="text" name="track_name" value="{{track.track_name}}" required><br>
+    Track URL: <input type="url" name="track_url" value="{{track.track_url}}" required><br>
+    <input type="submit" value="Save">
+</form>
+{% endblock %}

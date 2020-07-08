@@ -1,5 +1,14 @@
-<form method="POST" action="/response">
-   Name: <input type="text" name="fname" required><br>
-   Note: <input type="text" name="note" required><br>
-   <input type="submit" value="Submit">
+{% extends "base.html" %}
+
+{% block title %}New Track{% endblock %}
+
+{% block content %}
+<form method="POST" action="/insert_track">
+   Session ID: <input type="text" name="session_id" value="{{session.id}}" required><br>
+   Round Number: <input type="text" name="round_number" value="{{session.current_round}}" required><br>
+   Person Name: <input type="text" name="person" required><br>
+   Track Title (& Artist): <input type="text" name="track_name" required><br>
+   Track URL: <input type="url" name="track_url" required><br>
+   <input type="submit" value="Save">
 </form>
+{% endblock %}
