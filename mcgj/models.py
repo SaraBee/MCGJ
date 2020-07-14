@@ -35,18 +35,6 @@ class SQLite3BackedObject:
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def update(self):
-        self.update_date = datetime.datetime.now()
-        properties = copy(self.__dict__)
-        table = properties.pop("_table")
-        id = properties.pop("id")
-        columns = ", ".join([key + " = ?" for key in properties])
-        sql = "UPDATE {} SET {} where id = ?".format(table, columns, id)
-        values = list(properties.values()) + [id]
-
-        # Run our command.
-        db.execute(sql, values)
-
     def insert(self):
         if hasattr(self, "id"):
             raise AttributeError("This object already has an id, so I assume it already exists in the database.")
@@ -61,6 +49,24 @@ class SQLite3BackedObject:
 
         # Give ourselves the id of the created object.
         self.id = db.execute(sql, values)
+
+    def update(self):
+        self.update_date = datetime.datetime.now()
+        properties = copy(self.__dict__)
+        table = properties.pop("_table")
+        id = properties.pop("id")
+        columns = ", ".join([key + " = ?" for key in properties])
+        sql = "UPDATE {} SET {} where id = ?".format(table, columns)
+        values = list(properties.values()) + [id]
+
+        # Run our command.
+        db.execute(sql, values)
+
+    def delete(self):
+        if not hasattr(self, "id"):
+            raise AttributeError("This object does not have an id, so we can't delete it from the database.")
+        sql = "DELETE FROM {} WHERE id = ?".format(self._table)
+        db.execute(sql, str(self.id))
 
 
 class Track(SQLite3BackedObject):

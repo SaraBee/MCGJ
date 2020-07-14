@@ -33,28 +33,41 @@ def render_session(session_id):
     for round_num in range(1, session.current_round + 1):
         round_tracks = [track for track in tracks if track.round_number == round_num]
         tracks_dict[round_num] = {
-            "played": sorted([track for track in round_tracks if track.done is 1], key=lambda track: track.round_position),
-            "unplayed": [track for track in round_tracks if track.done is not 1]
+            "played": sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.round_position),
+            "unplayed": [track for track in round_tracks if track.done != 1]
         }
     print(tracks_dict)
 
     return render_template("session_detail.html", session=session, tracks_dict=tracks_dict)
 
 
+# We could make this accept GET, POST (to update) and DELETE methods, and
+# conditionally pick the code we run based on the method, like
+# https://pythonise.com/series/learning-flask/flask-http-methods
 @bp.route("/tracks/<track_id>")
 def render_edit_track(track_id):
     """Edit a track"""
     track = Track(with_id=track_id)
     return render_template("edit_track.html", track=track)
 
+
 @bp.route("/update_track/<track_id>", methods=['POST'])
 def update_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     track.person = request.form["person"]
-    track.track_name = request.form["track_name"]
-    track.track_url = request.form["track_url"]
+    track.track_name = request.form["track_name"] if request.form["track_name"] != "" else None
+    track.track_url = request.form["track_url"] if request.form["track_url"] != "" else None
     track.update()
+    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+
+
+# I felt like this should use the DELETE method but… it doesn't work in HTML forms?
+@bp.route("/delete_track/<track_id>")
+def delete_track(track_id):
+    """Submit an update to a track"""
+    track = Track(with_id=track_id)
+    track.delete()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
@@ -64,6 +77,7 @@ def render_new_track():
     """Create a new track"""
     session = Session(with_id=request.args["session_id"])
     return render_template("new_track.html", session=session)
+
 
 @bp.route("/insert_track", methods=['POST'])
 def insert_track():
