@@ -6,6 +6,7 @@
 <ul>
 {% for session in sessions %}
     <li><a href=/sessions/{{session.id}}>{{session.name}}</a></li>
-</ul>    
 {% endfor %}
+</ul>
+<a href=/insert_session>New Session</a>
 {% endblock %}

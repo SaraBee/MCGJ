@@ -53,45 +53,24 @@ def init_db_test():
         sess = Session()
         sess.name = "Test Session 2020-06-23"
         sess.date = datetime.date.today()
-        sess.current_round = 2
+        sess.current_round = 1
         sess.insert()
 
         track1 = Track()
         track1.session_id = sess.id
         track1.round_number = 1
-        track1.round_position = 1
         track1.person = "Toph Allen"
         track1.track_name = "AceMo — Heaven (2020 Mix)"
         track1.track_url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
-        track1.done = True
         track1.insert()
 
         track2 = Track()
         track2.session_id = sess.id
         track2.round_number = 1
-        track2.round_position = 2
         track2.person = "Sara Bobo"
         track2.track_name = "MissDat†Booty†"
         track2.track_url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
-        track2.done = True
         track2.insert()
-
-        track3 = Track()
-        track3.session_id = sess.id
-        track3.round_number = 2
-        track3.round_position = 1
-        track3.person = "Toph Allen"
-        track3.track_name = "HVL — K01B"
-        track3.track_url = "https://kiyadama.bandcamp.com/track/k01b"
-        track3.done = True
-        track3.insert()
-
-        track4 = Track()
-        track4.session_id = sess.id
-        track4.round_number = 2
-        track4.person = "Sara Bobo"
-        track4.done = False
-        track4.insert()
 
 
 @click.command("init-db-test")

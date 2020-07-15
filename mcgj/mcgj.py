@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+import datetime
 from . import db
 from .models import Session, Track
 
@@ -34,7 +35,7 @@ def render_session(session_id):
     for round_num in range(1, session.current_round + 1):
         round_tracks = [track for track in tracks if track.round_number == round_num]
         tracks_dict[round_num] = {
-            "played": sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.round_position),
+            "played": sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.cue_date),
             "unplayed": [track for track in round_tracks if track.done != 1]
         }
     print(tracks_dict)
@@ -83,6 +84,7 @@ def play_track(track_id):
     session = Session(with_id=track.session_id)
     track.round_number = session.current_round
     track.done = 1
+    track.cue_date = datetime.datetime.now()
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
@@ -108,7 +110,7 @@ def render_new_track():
 
 @bp.route("/insert_track", methods=['POST'])
 def insert_track():
-    """Submit an update to a track"""
+    """Insert a new track row"""
     print(request.form)
     track = Track(request.form)
     # track.session_id = request.form["session_id"]
@@ -119,6 +121,17 @@ def insert_track():
     print("ID of new track: {}".format(track.id))
     print(track.__dict__)
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+
+
+@bp.route("/insert_session")
+def insert_session():
+    """Create a new session"""
+    sess = Session()
+    sess.name = "Recurse MCG {}".format(datetime.date.today().isoformat())
+    sess.date = datetime.date.today()
+    sess.current_round = 1
+    sess.insert()
+    return redirect(url_for('mcgj.render_session', session_id=sess.id))
 
 
 

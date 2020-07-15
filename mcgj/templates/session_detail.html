@@ -6,7 +6,7 @@
 {% for round_num, round_tracks in tracks_dict.items() %}
     <h2>Round {{round_num}}</h2>
     {% for track in round_tracks["played"] %}
-        {% with track=track %} {% include "done_track_row.html" %} {% endwith %}
+        {% with position=loop.index, track=track %} {% include "done_track_row.html" %} {% endwith %}
     {% endfor %}
     {% if round_tracks["unplayed"]|length > 0 %}
         <h3>Unplayed</h3>

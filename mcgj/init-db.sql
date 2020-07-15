@@ -18,11 +18,11 @@ CREATE TABLE tracks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP,
+    cue_date TIMESTAMP,
     person TEXT,
     track_name TEXT,
     track_url TEXT,
     session_id INTEGER,
     done INTEGER,
-    round_number INTEGER,
-    round_position INTEGER
+    round_number INTEGER
 );
