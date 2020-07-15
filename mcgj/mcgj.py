@@ -16,7 +16,8 @@ def index():
     sessions = [Session(row) for row in rows]
     return render_template("session_list.html", sessions=sessions)
 
-
+# TODO: reorganize page to move UI pieces to the top, change to
+# reverse order of rounds and tracks below
 @bp.route("/sessions/<session_id>")
 def render_session(session_id):
     print(session_id)
@@ -40,6 +41,16 @@ def render_session(session_id):
 
     return render_template("session_detail.html", session=session, tracks_dict=tracks_dict)
 
+@bp.route("/sessions/<session_id>/next_round")
+def next_round(session_id):
+    """Update current round for session"""
+    session = Session(with_id=session_id)
+    session.current_round += 1
+    session.update()
+    # TODO: This is where code would go to check the Zoom API to auto-populate the list of ppl
+    return redirect(url_for('mcgj.render_session', session_id=session.id))
+
+
 
 # We could make this accept GET, POST (to update) and DELETE methods, and
 # conditionally pick the code we run based on the method, like
@@ -62,7 +73,22 @@ def update_track(track_id):
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
+
+@bp.route("/tracks/<track_id>/cue")
+def play_track(track_id):
+    """Submit an update to a track"""
+    track = Track(with_id=track_id)
+    # TODO: When we restruture the UI, this is where round number will get assigned
+    # If the URL is a Spotify URL, add it to this session's playlist, otherwise open it.
+    session = Session(with_id=track.session_id)
+    track.round_number = session.current_round
+    track.done = 1
+    track.update()
+    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+
+
 # I felt like this should use the DELETE method but… it doesn't work in HTML forms?
+# TODO: Change this to /tracks/<track_id>/delete. Same with update track etc.
 @bp.route("/delete_track/<track_id>")
 def delete_track(track_id):
     """Submit an update to a track"""
@@ -71,6 +97,7 @@ def delete_track(track_id):
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
+# TODO: New tracks don't need a round number, they'll get one at the time they are added to the current round
 @bp.route("/new_track")
 # If we are able to pass in params, we can pass them in here for session_id and round_number.
 def render_new_track():
@@ -92,5 +119,6 @@ def insert_track():
     print("ID of new track: {}".format(track.id))
     print(track.__dict__)
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+
 
 

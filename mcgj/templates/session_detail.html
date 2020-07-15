@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}{{session.name}}{% endblock %}
+{% block title %}{{session.name}} – Round {{session.current_round}} {% endblock %}
 
 {% block content %}
-<h1>Tracks</h1>
+<h1>{{session.name}} – Round {{session.current_round}}</h1>
 {% for round_num, round_tracks in tracks_dict.items() %}
     <h2>Round {{round_num}}</h2>
     {% for track in round_tracks["played"] %}
@@ -16,4 +16,6 @@
     {% endif %}
 {% endfor %}
 <a href="/new_track?session_id={{ session.id }}">Add New Track</a>
+
+<a href="/sessions/{{session.id}}/next_round">Next Round</a>
 {% endblock %}
