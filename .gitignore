@@ -64,3 +64,6 @@ packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
 
 venv/
+
+# Databases
+*.db
