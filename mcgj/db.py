@@ -40,6 +40,7 @@ def init_db():
 def init_db_command():
     """DESTROY existing data and create a new table."""
     init_db()
+    click.echo(current_app.config["DATABASE"])
     click.echo("Initialized the database.")
 
 
