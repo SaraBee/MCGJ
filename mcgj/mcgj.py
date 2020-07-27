@@ -17,10 +17,16 @@ def index():
     sessions = [Session(row) for row in rows]
     return render_template("session_list.html", sessions=sessions)
 
-# TODO: reorganize page to move UI pieces to the top, change to
-# reverse order of rounds and tracks below
+
 @bp.route("/sessions/<session_id>")
 def render_session(session_id):
+    """
+    Renders a list of tracks for a given session.
+
+    First, we fetch the tracks for this session from the database. We them pass them to the Jinja template for this view in the following objects:
+    - unplayed: A list of all unplayed tracks for this session.
+    - played: A dictionary with a key-value pair for each round. The keys are the round numbers, and the values are lists of the tracks, ordered by their cue dates.
+    """
     print(session_id)
     session = Session(with_id=session_id)
 
@@ -31,16 +37,17 @@ def render_session(session_id):
     for track in tracks:
         print(track.__dict__)
 
-    tracks_dict = {}
+    unplayed = []
+    unplayed = [track for track in tracks if track.done != 1]
+
+    played = {}
     for round_num in range(1, session.current_round + 1):
         round_tracks = [track for track in tracks if track.round_number == round_num]
-        tracks_dict[round_num] = {
-            "played": sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.cue_date),
-            "unplayed": [track for track in round_tracks if track.done != 1]
-        }
-    print(tracks_dict)
+        played[round_num] = sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.cue_date)
+    print(played)
 
-    return render_template("session_detail.html", session=session, tracks_dict=tracks_dict)
+    return render_template("session_detail.html", session=session, unplayed=unplayed, played=played)
+
 
 @bp.route("/sessions/<session_id>/next_round")
 def next_round(session_id):
@@ -50,7 +57,6 @@ def next_round(session_id):
     session.update()
     # TODO: This is where code would go to check the Zoom API to auto-populate the list of ppl
     return redirect(url_for('mcgj.render_session', session_id=session.id))
-
 
 
 # We could make this accept GET, POST (to update) and DELETE methods, and
@@ -72,7 +78,6 @@ def update_track(track_id):
     track.track_url = request.form["track_url"] if request.form["track_url"] != "" else None
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
-
 
 
 @bp.route("/tracks/<track_id>/cue")

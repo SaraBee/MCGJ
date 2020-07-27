@@ -3,17 +3,19 @@
 
 {% block content %}
 <h1>{{session.name}} – Round {{session.current_round}}</h1>
-{% for round_num, round_tracks in tracks_dict.items() %}
+<h2>Unplayed</h2>
+{% if unplayed|length > 0 %}
+    {% for track in unplayed %}
+        {% with track=track %} {% include "pending_track_row.html" %} {% endwith %}
+    {% endfor %}
+{% else %}
+    No unplayed tracks.
+{% endif %}
+{% for round_num, round_tracks in played.items() %}
     <h2>Round {{round_num}}</h2>
-    {% for track in round_tracks["played"] %}
+    {% for track in round_tracks %}
         {% with position=loop.index, track=track %} {% include "done_track_row.html" %} {% endwith %}
     {% endfor %}
-    {% if round_tracks["unplayed"]|length > 0 %}
-        <h3>Unplayed</h3>
-        {% for track in round_tracks["unplayed"] %}
-            {% with track=track %} {% include "pending_track_row.html" %} {% endwith %}
-        {% endfor %}
-    {% endif %}
 {% endfor %}
 <a href="/new_track?session_id={{ session.id }}">Add New Track</a>
 
