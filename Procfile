@@ -1,1 +1,1 @@
-web: gunicorn "myproject:create_app()"
+web: gunicorn "mcgj:create_app()"
