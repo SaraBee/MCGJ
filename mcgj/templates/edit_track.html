@@ -3,10 +3,10 @@
 {% block title %}Edit Track{% endblock %}
 
 {% block content %}
-<form method="POST" action="/update_track/{{track.id}}">
-    Person Name: <input type="text" name="person" value={{track.person if track.person != None else ""}} required><br>
-    Track Title (& Artist): <input type="text" name="track_name" value={{track.track_name if track.track_name != None else ""}}><br>
-    Track URL: <input type="text" name="track_url" value={{track.track_url if track.track_url != None else ""}}><br>
+<form method="POST" action="/tracks/{{track.id}}/update">
+    Person Name: <input type="text" name="person" value="{{track.person if track.person != None}}" required><br>
+    Track Title (& Artist): <input type="text" name="track_name" value="{{track.track_name if track.track_name != None}}"><br>
+    Track URL: <input type="text" name="track_url" value="{{track.track_url if track.track_url != None}}"><br>
     <input type="submit" value="Save">
 </form>
 {% endblock %}

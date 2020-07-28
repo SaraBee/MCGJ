@@ -3,21 +3,24 @@
 
 {% block content %}
 <h1>{{session.name}} – Round {{session.current_round}}</h1>
-<h2>Unplayed</h2>
+<a href={{session.spotify_url}}>Spotify Playlist</a>
+<a href="/sessions/{{session.id}}/edit">Edit Session</a>
+<h2>Unplayed Tracks</h2>
 {% if unplayed|length > 0 %}
     {% for track in unplayed %}
-        {% with track=track %} {% include "pending_track_row.html" %} {% endwith %}
+        {% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}
     {% endfor %}
 {% else %}
-    No unplayed tracks.
+    No unplayed tracks.<br>
 {% endif %}
+<a href="/new_track?session_id={{session.id}}">Add Track</a>
 {% for round_num, round_tracks in played.items() %}
     <h2>Round {{round_num}}</h2>
     {% for track in round_tracks %}
-        {% with position=loop.index, track=track %} {% include "done_track_row.html" %} {% endwith %}
+        {% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}
     {% endfor %}
 {% endfor %}
-<a href="/new_track?session_id={{ session.id }}">Add New Track</a>
+
 
 <a href="/sessions/{{session.id}}/next_round">Next Round</a>
 {% endblock %}

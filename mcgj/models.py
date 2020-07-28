@@ -66,7 +66,8 @@ class SQLite3BackedObject:
         if not hasattr(self, "id"):
             raise AttributeError("This object does not have an id, so we can't delete it from the database.")
         sql = "DELETE FROM {} WHERE id = ?".format(self._table)
-        db.execute(sql, str(self.id))
+        print(sql)
+        db.execute(sql, [str(self.id)])
 
 
 class Track(SQLite3BackedObject):

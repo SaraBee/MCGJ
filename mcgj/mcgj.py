@@ -49,6 +49,31 @@ def render_session(session_id):
     return render_template("session_detail.html", session=session, unplayed=unplayed, played=played)
 
 
+@bp.route("/sessions/<session_id>/edit")
+def edit_session(session_id):
+    """
+    Renders a list of tracks for a given session.
+
+    First, we fetch the tracks for this session from the database. We them pass them to the Jinja template for this view in the following objects:
+    - unplayed: A list of all unplayed tracks for this session.
+    - played: A dictionary with a key-value pair for each round. The keys are the round numbers, and the values are lists of the tracks, ordered by their cue dates.
+    """
+    print("edit {}".format(session_id))
+    session = Session(with_id=session_id)
+    return render_template("edit_session.html", session=session)
+
+
+@bp.route("/sessions/<session_id>/update", methods=['POST'])
+def update_session(session_id):
+    """Submit an update to a track"""
+    session = Session(with_id=session_id)
+    session.name = request.form["name"] if request.form["name"] != "" else None
+    session.spotify_url = request.form["spotify_url"] if request.form["spotify_url"] != "" else None
+    session.current_round = request.form["current_round"] if request.form["current_round"] != "" else None
+    session.update()
+    return redirect(url_for('mcgj.render_session', session_id=session_id))
+
+
 @bp.route("/sessions/<session_id>/next_round")
 def next_round(session_id):
     """Update current round for session"""
@@ -56,20 +81,31 @@ def next_round(session_id):
     session.current_round += 1
     session.update()
     # TODO: This is where code would go to check the Zoom API to auto-populate the list of ppl
+
+    rows_query = "SELECT * FROM tracks WHERE (session_id = ? AND round_number = ? AND done = 1)"
+    prev_round_tracks = db.query(sql=rows_query, args=[session.id, session.current_round - 1])
+    
+    print("THE QUERY WORKED")
+
+    for prev_track in prev_round_tracks:
+        new_track = Track(session_id = session.id, person = prev_track["person"])
+        new_track.insert()
+
+
     return redirect(url_for('mcgj.render_session', session_id=session.id))
 
 
 # We could make this accept GET, POST (to update) and DELETE methods, and
 # conditionally pick the code we run based on the method, like
 # https://pythonise.com/series/learning-flask/flask-http-methods
-@bp.route("/tracks/<track_id>")
+@bp.route("/tracks/<track_id>/edit")
 def render_edit_track(track_id):
     """Edit a track"""
     track = Track(with_id=track_id)
     return render_template("edit_track.html", track=track)
 
 
-@bp.route("/update_track/<track_id>", methods=['POST'])
+@bp.route("/tracks/<track_id>/update", methods=['POST'])
 def update_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
@@ -81,7 +117,7 @@ def update_track(track_id):
 
 
 @bp.route("/tracks/<track_id>/cue")
-def play_track(track_id):
+def cue_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     # TODO: When we restruture the UI, this is where round number will get assigned
@@ -94,9 +130,19 @@ def play_track(track_id):
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
+@bp.route("/tracks/<track_id>/uncue")
+def uncue_track(track_id):
+    """Submit an update to a track"""
+    track = Track(with_id=track_id)
+    # Makes a track Unplayed
+    track.done = 0
+    track.update()
+    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+
+
 # I felt like this should use the DELETE method but… it doesn't work in HTML forms?
 # TODO: Change this to /tracks/<track_id>/delete. Same with update track etc.
-@bp.route("/delete_track/<track_id>")
+@bp.route("/tracks/<track_id>/delete")
 def delete_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
