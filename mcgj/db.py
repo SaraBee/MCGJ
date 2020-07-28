@@ -127,23 +127,7 @@ def init_app(app):
 
 
 if __name__ == "__main__":
-    db = sqlite3.connect(current_app.config["DATABASE"])
 
-    def dict_factory(cursor, row):
-        d = {}
-        for idx, col in enumerate(cursor.description):
-            d[col[0]] = row[idx]
-        return d
-    db.row_factory = dict_factory
-
-    cursor = db.cursor()
-
-    command = """
-    SELECT * FROM tracks
-    """
-
-    tracks = []
-    for track in cursor.execute(command):
-        tracks.append(track)
-
+    with current_app.app_context():
+        result = query("SELECT name FROM sqlite_master WHERE type='table';")
     print(tracks)
