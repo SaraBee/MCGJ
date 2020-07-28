@@ -61,16 +61,16 @@ def init_db_test():
         track1.session_id = sess.id
         track1.round_number = 1
         track1.person = "Toph Allen"
-        track1.track_name = "AceMo — Heaven (2020 Mix)"
-        track1.track_url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
+        track1.title = "AceMo — Heaven (2020 Mix)"
+        track1.url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
         track1.insert()
 
         track2 = Track()
         track2.session_id = sess.id
         track2.round_number = 1
         track2.person = "Sara Bobo"
-        track2.track_name = "MissDat†Booty†"
-        track2.track_url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
+        track2.title = "MissDat†Booty†"
+        track2.url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
         track2.insert()
 
 

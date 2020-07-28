@@ -20,9 +20,10 @@ CREATE TABLE tracks (
     update_date TIMESTAMP,
     cue_date TIMESTAMP,
     person TEXT,
-    track_name TEXT,
-    track_url TEXT,
+    title TEXT,
+    artist TEXT,
+    url TEXT,
     session_id INTEGER,
-    done INTEGER,
+    played INTEGER,
     round_number INTEGER
 );

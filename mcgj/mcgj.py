@@ -37,16 +37,16 @@ def render_session(session_id):
     for track in tracks:
         print(track.__dict__)
 
-    unplayed = []
-    unplayed = [track for track in tracks if track.done != 1]
+    unplayed_tracks = []
+    unplayed_tracks = [track for track in tracks if track.played != 1]
 
-    played = {}
+    played_tracks = {}
     for round_num in range(1, session.current_round + 1):
         round_tracks = [track for track in tracks if track.round_number == round_num]
-        played[round_num] = sorted([track for track in round_tracks if track.done == 1], key=lambda track: track.cue_date)
-    print(played)
+        played_tracks[round_num] = sorted([track for track in round_tracks if track.played == 1], key=lambda track: track.cue_date)
+    print(played_tracks)
 
-    return render_template("session_detail.html", session=session, unplayed=unplayed, played=played)
+    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks)
 
 
 @bp.route("/sessions/<session_id>/edit")
@@ -82,7 +82,7 @@ def next_round(session_id):
     session.update()
     # TODO: This is where code would go to check the Zoom API to auto-populate the list of ppl
 
-    rows_query = "SELECT * FROM tracks WHERE (session_id = ? AND round_number = ? AND done = 1)"
+    rows_query = "SELECT * FROM tracks WHERE (session_id = ? AND round_number = ? AND played = 1)"
     prev_round_tracks = db.query(sql=rows_query, args=[session.id, session.current_round - 1])
     
     print("THE QUERY WORKED")
@@ -110,8 +110,9 @@ def update_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     track.person = request.form["person"]
-    track.track_name = request.form["track_name"] if request.form["track_name"] != "" else None
-    track.track_url = request.form["track_url"] if request.form["track_url"] != "" else None
+    track.title = request.form["title"] if request.form["title"] != "" else None
+    track.artist = request.form["artist"] if request.form["artist"] != "" else None
+    track.url = request.form["url"] if request.form["url"] != "" else None
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
@@ -124,7 +125,7 @@ def cue_track(track_id):
     # If the URL is a Spotify URL, add it to this session's playlist, otherwise open it.
     session = Session(with_id=track.session_id)
     track.round_number = session.current_round
-    track.done = 1
+    track.played = 1
     track.cue_date = datetime.datetime.now()
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
@@ -135,7 +136,7 @@ def uncue_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     # Makes a track Unplayed
-    track.done = 0
+    track.played = 0
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
@@ -159,6 +160,7 @@ def render_new_track():
     return render_template("new_track.html", session=session)
 
 
+# TODO: Could probably be "tracks/insert"
 @bp.route("/insert_track", methods=['POST'])
 def insert_track():
     """Insert a new track row"""
@@ -166,8 +168,8 @@ def insert_track():
     track = Track(request.form)
     # track.session_id = request.form["session_id"]
     # track.person = request.form["person"]
-    # track.track_name = request.form["track_name"]
-    # track.track_url = request.form["track_url"]
+    # track.title = request.form["title"]
+    # track.url = request.form["url"]
     track.insert()
     print("ID of new track: {}".format(track.id))
     print(track.__dict__)

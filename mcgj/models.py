@@ -74,6 +74,15 @@ class Track(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="tracks", **kwargs)
 
+    def title_string(self):
+        """
+        This prints "artist — title" if both are present, otherwise just "artist" or "title".
+        """
+        artist = self.artist if hasattr(self, "artist") else None
+        title = self.title if hasattr(self, "title") else None
+        parts = [part for part in [artist, title] if len(part) > 0]
+        return " — ".join(parts)
+
 
 class Session(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
