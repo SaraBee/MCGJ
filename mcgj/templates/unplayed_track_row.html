@@ -1,3 +1,2 @@
-<li><a href="/tracks/{{track.id}}/cue">Cue</a> {{track.person}}: <a href={{track.url}}>{{track.title_string()}}</a> | 
-    <!-- <form action="/tracks/{{track.id}}"> <input type="submit" value="Edit Track" /> </form> -->
-    <a href="/tracks/{{track.id}}/edit">Edit</a> <a href="/tracks/{{track.id}}/delete">Delete</a></li>
+<li>{{track.person}}: <a href="{{track.absolute_url() if track.url != None}}" target="_blank">{{track.title_string()}}</a> | 
+    <a href="/tracks/{{track.id}}/cue">Cue</a> | <a href="/tracks/{{track.id}}/edit">Edit</a> | <a href="/tracks/{{track.id}}/delete">Delete</a></li>

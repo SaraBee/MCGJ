@@ -80,8 +80,15 @@ class Track(SQLite3BackedObject):
         """
         artist = self.artist if hasattr(self, "artist") else None
         title = self.title if hasattr(self, "title") else None
-        parts = [part for part in [artist, title] if len(part) > 0]
+        parts = [part for part in [artist, title] if part is not None]
         return " — ".join(parts)
+
+    def absolute_url(self):
+        url = self.url
+        if url.startswith("https://") or url.startswith("http://"):
+            return url
+        else:
+            return "http://" + url
 
 
 class Session(SQLite3BackedObject):

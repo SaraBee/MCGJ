@@ -2,10 +2,14 @@
 {% block title %}{{session.name}} – Round {{session.current_round}} {% endblock %}
 
 {% block content %}
-<h1>{{session.name}} – Round {{session.current_round}}</h1>
-<a href={{session.spotify_url}}>Spotify Playlist</a>
-<a href="/sessions/{{session.id}}/edit">Edit Session</a>
+<h1>{{session.name}}</h1>
+<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a>
+
 <h2>Unplayed Tracks</h2>
+
+<p> We're currently on <b>Round {{session.current_round}}</b>. “Cue” a track to add mark it as played and add it to this round.</p>
+
+<p>
 {% if unplayed|length > 0 %}
     {% for track in unplayed %}
         {% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}
@@ -13,14 +17,20 @@
 {% else %}
     No unplayed tracks.<br>
 {% endif %}
-<a href="/new_track?session_id={{session.id}}">Add Track</a>
+</p>
+
+<p><a href="/new_track?session_id={{session.id}}">Add Track</a></p>
+
 {% for round_num, round_tracks in played.items() %}
     <h2>Round {{round_num}}</h2>
+    <p>
     {% for track in round_tracks %}
         {% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}
     {% endfor %}
+    </p>
 {% endfor %}
 
-
-<a href="/sessions/{{session.id}}/next_round">Next Round</a>
+<p>
+<a href="/sessions/{{session.id}}/next_round">Next Round</a> | This increases the current round, and adds a new blank track for everyone who played a track in the last round.
+</p>
 {% endblock %}
