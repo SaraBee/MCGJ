@@ -1,11 +1,14 @@
 import sqlite3
 import json
 import click
-from flask import Flask, g
+from flask import Flask, g, Blueprint
 from flask.cli import with_appcontext
 from flask import current_app
 from .models import Track, Session
 import datetime
+
+
+bp = Blueprint("db", __name__)
 
 
 def connect():
@@ -35,8 +38,8 @@ def init_db():
         connection.commit()
 
 
-@click.command("init-db")
-@with_appcontext
+@bp.cli.command("init")
+# @with_appcontext
 def init_db_command():
     """DESTROY existing data and create a new table."""
     init_db()
@@ -74,8 +77,8 @@ def init_db_test():
         track2.insert()
 
 
-@click.command("init-db-test")
-@with_appcontext
+@bp.cli.command("init-test")
+# @with_appcontext
 def init_db_test_command():
     """DESTROY existing data and create a new table with testing data.."""
     init_db_test()

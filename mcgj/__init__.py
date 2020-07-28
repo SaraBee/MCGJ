@@ -25,5 +25,6 @@ def create_app(test_config=None):
     db.init_app(app)
 
     app.register_blueprint(mcgj.bp)
+    app.register_blueprint(db.bp)
 
     return app
