@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from mcgj import db, mcgj
+from . import db, mcgj
 
 
 def create_app(test_config=None):
