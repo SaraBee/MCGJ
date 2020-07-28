@@ -2,7 +2,10 @@
 {% block title %}MCGJ!{% endblock %}
 
 {% block content %}
-<h1>Sessions</h1>
+<h1>MCGJ!</h1>
+
+<h2>MCG Sessions</h2>
+
 <ul>
 {% for session in sessions %}
     <li><a href=/sessions/{{session.id}}>{{session.name}}</a></li>
