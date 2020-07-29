@@ -81,7 +81,7 @@ class Track(SQLite3BackedObject):
         """
         artist = self.artist if hasattr(self, "artist") else ""
         title = self.title if hasattr(self, "title") else ""
-        parts = [part for part in [artist, title] if len(part) > 0]
+        parts = [part for part in [artist, title] if part is not None and len(part) > 0]
         return " — ".join(parts)
 
     def absolute_url(self):
