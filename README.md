@@ -1,5 +1,5 @@
 # MCGJ
 
-This is 
+## To Do
 
-Data Model Notes
+- Write readme

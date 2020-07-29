@@ -2,6 +2,7 @@ import uuid
 from . import db
 from copy import copy
 import datetime
+from re import match
 
 # This track object should be initialized with a sqlite3.Row.
 # There should be accessors for properties, and setters.
@@ -74,18 +75,18 @@ class Track(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="tracks", **kwargs)
 
-    def title_string(self):
+    def artist_title(self):
         """
         This prints "artist — title" if both are present, otherwise just "artist" or "title".
         """
-        artist = self.artist if hasattr(self, "artist") else None
-        title = self.title if hasattr(self, "title") else None
-        parts = [part for part in [artist, title] if part is not None]
+        artist = self.artist if hasattr(self, "artist") else ""
+        title = self.title if hasattr(self, "title") else ""
+        parts = [part for part in [artist, title] if len(part) > 0]
         return " — ".join(parts)
 
     def absolute_url(self):
         url = self.url
-        if url.startswith("https://") or url.startswith("http://"):
+        if match(r'^[a-zA-Z]+://', url):
             return url
         else:
             return "http://" + url
