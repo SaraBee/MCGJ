@@ -1,0 +1,27 @@
+:root {
+        /* https://coolors.co/001f1e-e3e1de-b8ded7-f9ada0-a997df */
+        --jungle: #001F1E;
+        --slate: #2D4C4F;
+        --platinum: #E3E1DE;
+        --powder: #B8DED7;
+        --melon: #F9ADA0;
+        --bluebell: #A997DF;
+}
+
+body {
+        background-color: var(--jungle);
+        color: var(--platinum);
+        font-family: sans-serif;
+}
+
+a:link {
+        color: var(--powder);
+}
+
+a:hover {
+        background: var(--slate);
+}
+
+a:visited {
+        color: var(--melon);
+}
