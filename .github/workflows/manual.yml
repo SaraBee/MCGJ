@@ -22,11 +22,10 @@ jobs:
       id: test-cmd
       uses: CamiloGarciaLaRotta/watermelon-http-client@v1.4
       with:
-        url: ${{secrets.CONSOLE_URI}}
+        url: '${{secrets.CONSOLE_URI}}'
         method: POST
-        headers: ${{secrets.AUTH_HEADER}}
-        data: ${{secrets.PULL_CMD}}
-        verbose: true
+        headers: '${{secrets.AUTH_HEADER}}'
+        data: '${{secrets.PULL_CMD}}'
     - name: Test Command Status
       run: echo ${{ steps.test-cmd.outputs.status }}
       shell: bash
