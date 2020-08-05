@@ -23,7 +23,6 @@ jobs:
       uses: fjogeleit/http-request-action@v1.4.1
       with:
         url: ${{secrets.CONSOLE_URI}}
-        method: 'POST'
         data: ${{secrets.PULL_CMD}}
         customHeaders: ${{secrets.AUTH_HEADER}}
     - name: Test Command Status
