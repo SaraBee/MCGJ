@@ -20,11 +20,12 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send Test Command
       id: test-cmd
-      uses: fjogeleit/http-request-action@v1.4.1
+      uses: satak/webrequest-action@master
       with:
         url: ${{secrets.CONSOLE_URI}}
-        data: ${{secrets.PULL_CMD}}
-        customHeaders: ${{secrets.AUTH_HEADER}}
+        method: POST
+        payload: ${{secrets.PULL_CMD}}
+        headers: ${{secrets.AUTH_HEADER}}
     - name: Test Command Status
       run: echo ${{ steps.test-cmd.outputs.status }}
       shell: bash
