@@ -6,15 +6,7 @@ name: Manual workflow
 # or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true
+  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,5 +18,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ github.event.inputs.name }}"
+    - name: Send Test Command
+      id: test-cmd
+      uses: CamiloGarciaLaRotta/watermelon-http-client@v1.4
+      with:
+        url: ${{secrets.CONSOLE_URI}}
+        headers: ${{secrets.AUTH_HEADER}}
+        method: post
+        data: ${{secrets.PULL_CMD}}
+    - name: Test Command Status
+      run: echo ${{ steps.test-cmd.outputs.status }}
+      shell: bash
