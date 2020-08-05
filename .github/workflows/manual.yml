@@ -23,8 +23,8 @@ jobs:
       uses: CamiloGarciaLaRotta/watermelon-http-client@v1.4
       with:
         url: ${{secrets.CONSOLE_URI}}
-        headers: ${{secrets.AUTH_HEADER}}
         method: POST
+        headers: ${{secrets.AUTH_HEADER}}
         data: ${{secrets.PULL_CMD}}
     - name: Test Command Status
       run: echo ${{ steps.test-cmd.outputs.status }}
