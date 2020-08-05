@@ -26,6 +26,7 @@ jobs:
         method: POST
         headers: ${{secrets.AUTH_HEADER}}
         data: ${{secrets.PULL_CMD}}
+        verbose: true
     - name: Test Command Status
       run: echo ${{ steps.test-cmd.outputs.status }}
       shell: bash
