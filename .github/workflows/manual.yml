@@ -20,12 +20,12 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send Test Command
       id: test-cmd
-      uses: CamiloGarciaLaRotta/watermelon-http-client@v1.4
+      uses: fjogeleit/http-request-action@v1.4.1
       with:
-        url: '${{secrets.CONSOLE_URI}}'
-        method: POST
-        headers: '${{secrets.AUTH_HEADER}}'
-        data: '${{secrets.PULL_CMD}}'
+        url: ${{secrets.CONSOLE_URI}}
+        method: 'POST'
+        data: ${{secrets.PULL_CMD}}
+        customHeaders: ${{secrets.AUTH_HEADER}}
     - name: Test Command Status
       run: echo ${{ steps.test-cmd.outputs.status }}
       shell: bash
