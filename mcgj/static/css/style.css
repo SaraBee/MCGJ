@@ -44,6 +44,11 @@ ul {
         list-style-type: none;
 }
 
+li {
+        padding-left: 3.5em;
+        text-indent:-3.5em;
+}
+
 li.odd {
         background: var(--light-jungle);
 }
