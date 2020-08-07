@@ -2,35 +2,39 @@
 {% block title %}{{session.name}} – Round {{session.current_round}} {% endblock %}
 
 {% block content %}
+<div class="session">
 <h1>{{session.name}}</h1>
 <a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a>
 
 <h2>Unplayed Tracks</h2>
-
-<p> We're currently on <b>Round {{session.current_round}}</b>. “Cue” a track to add mark it as played and add it to this round.</p>
-
+<p>
+    <a class="icon-btn" href="/new_track?session_id={{session.id}}"><i class="ri-add-box-fill"></i></a> Add New Track
+</p>
 <p>
 {% if unplayed|length > 0 %}
-    {% for track in unplayed %}
-        {% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}
-    {% endfor %}
+    <ul>
+        {% for track in unplayed %}
+        <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}</li>
+        {% endfor %}
+    </ul>
 {% else %}
-    No unplayed tracks.<br>
+    No unplayed tracks.<br/>
 {% endif %}
 </p>
 
-<p><a href="/new_track?session_id={{session.id}}">Add Track</a></p>
+<hr/>
 
-{% for round_num, round_tracks in played.items() %}
+{% for round_num, round_tracks in played.items()|reverse %}
     <h2>Round {{round_num}}</h2>
-    <p>
-    {% for track in round_tracks %}
-        {% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}
-    {% endfor %}
-    </p>
+    <ul>
+        {% for track in round_tracks %}
+        <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}</li>
+        {% endfor %}
+    </ul>
 {% endfor %}
 
 <p>
-<a href="/sessions/{{session.id}}/next_round">Next Round</a> | Click this to increment the current round and add a new blank track for everyone who played a track in the last round. You can decrement the curent round by clicking on "Edit Session" above.
+    <a href="/sessions/{{session.id}}/next_round">Next Round</a> | Click this to increment the current round and add a new blank track for everyone who played a track in the last round. You can decrement the curent round by clicking on "Edit Session" above.
 </p>
+</div>
 {% endblock %}

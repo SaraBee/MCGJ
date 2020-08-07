@@ -1,6 +1,7 @@
 :root {
         /* https://coolors.co/001f1e-2d4c4f-e3e1de-b8ded7-f9ada0-a997df */
         --jungle: #001F1E;
+        --light-jungle: #173637;
         --slate: #2D4C4F;
         --platinum: #E3E1DE;
         --powder: #B8DED7;
@@ -24,4 +25,37 @@ a:hover {
 
 a:visited {
         color: var(--melon);
+}
+
+a.icon-btn {
+        text-decoration: none;
+        color: var(--powder);
+}
+
+a.icon-btn:visited {
+        color: var(--powder);
+}
+
+a.icon-btn:hover {
+        color: var(--bluebell);
+}
+
+ul {
+        list-style-type: none;
+}
+
+li.odd {
+        background: var(--light-jungle);
+}
+
+li:hover {
+        background: var(--slate);
+}
+
+hr {
+        border-color: var(--light-jungle);
+}
+
+.session {
+        width: 600px;
 }
