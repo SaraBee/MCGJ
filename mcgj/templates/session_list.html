@@ -6,10 +6,10 @@
 
 <h2>MCG Sessions</h2>
 
-<ul>
 {% for session in sessions %}
-    <li><a href=/sessions/{{session.id}}>{{session.name}}</a></li>
+<a href=/sessions/{{session.id}}>{{session.name}}</a>
+<br/>
 {% endfor %}
-</ul>
+<br/>
 <a href=/insert_session>New Session</a>
 {% endblock %}
