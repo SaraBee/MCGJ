@@ -24,6 +24,8 @@
 
 <hr/>
 
+<a class="icon-btn" href="/sessions/{{session.id}}/next_round"><i class="ri-play-list-fill"></i></a> Start Next Round
+<br/>
 {% for round_num, round_tracks in played.items()|reverse %}
     <h2>Round {{round_num}}</h2>
     <ul>
@@ -32,9 +34,5 @@
         {% endfor %}
     </ul>
 {% endfor %}
-
-<p>
-    <a href="/sessions/{{session.id}}/next_round">Next Round</a> | Click this to increment the current round and add a new blank track for everyone who played a track in the last round. You can decrement the curent round by clicking on "Edit Session" above.
-</p>
 </div>
 {% endblock %}

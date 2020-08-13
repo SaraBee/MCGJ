@@ -6,7 +6,7 @@
 
 <h2>MCG Sessions</h2>
 
-{% for session in sessions %}
+{% for session in sessions|reverse %}
 <a href=/sessions/{{session.id}}>{{session.name}}</a>
 <br/>
 {% endfor %}
