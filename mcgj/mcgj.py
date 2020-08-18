@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask import session as client_session
 import datetime
 from . import db
 from .models import Session, Track
@@ -46,8 +47,31 @@ def render_session(session_id):
         played_tracks[round_num] = sorted([track for track in round_tracks if track.played == 1], key=lambda track: track.cue_date)
     print(played_tracks)
 
-    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks)
+    is_driving = False
+    if 'driving' in client_session:
+        is_driving = client_session['driving'].get(session_id)
 
+    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving)
+
+@bp.route("/sessions/<session_id>/drive")
+def driveSession(session_id):
+    if 'driving' not in client_session:
+        client_session['driving'] = {}
+
+    client_session['driving'][session_id] = True
+    client_session.modified = True
+
+    return redirect(url_for('mcgj.render_session', session_id=session_id))
+
+@bp.route("/sessions/<session_id>/undrive")
+def undriveSession(session_id):
+    if 'driving' not in client_session:
+        client_session['driving'] = {}
+
+    client_session['driving'][session_id] = False
+    client_session.modified = True
+
+    return redirect(url_for('mcgj.render_session', session_id=session_id))
 
 @bp.route("/sessions/<session_id>/edit")
 def edit_session(session_id):
@@ -84,8 +108,6 @@ def next_round(session_id):
 
     rows_query = "SELECT * FROM tracks WHERE (session_id = ? AND round_number = ? AND played = 1)"
     prev_round_tracks = db.query(sql=rows_query, args=[session.id, session.current_round - 1])
-    
-    print("THE QUERY WORKED")
 
     for prev_track in prev_round_tracks:
         new_track = Track(session_id = session.id, person = prev_track["person"])

@@ -4,7 +4,12 @@
 {% block content %}
 <div class="session">
 <h1>{{session.name}}</h1>
-<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a>
+
+{% if is_driving %}
+<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a> | <a href="/sessions/{{session.id}}/undrive">Stop Driving</a>
+{% else %}
+<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/drive">Drive Session</a>
+{% endif %}
 
 <h2>Unplayed Tracks</h2>
 <p>
@@ -14,7 +19,11 @@
 {% if unplayed|length > 0 %}
     <ul>
         {% for track in unplayed %}
+        {% if is_driving %}
         <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}</li>
+        {% else %}
+        <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "user_unplayed_track_row.html" %} {% endwith %}</li>
+        {% endif %}
         {% endfor %}
     </ul>
 {% else %}
@@ -23,14 +32,20 @@
 </p>
 
 <hr/>
-
+{% if is_driving %}
 <a class="icon-btn" href="/sessions/{{session.id}}/next_round"><i class="ri-play-list-fill"></i></a> Start Next Round
 <br/>
+{% endif %}
+
 {% for round_num, round_tracks in played.items()|reverse %}
     <h2>Round {{round_num}}</h2>
     <ul>
         {% for track in round_tracks %}
+        {% if is_driving %}
         <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}</li>
+        {% else %}
+        <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "user_played_track_row.html" %} {% endwith %}</li>
+        {% endif %}
         {% endfor %}
     </ul>
 {% endfor %}
