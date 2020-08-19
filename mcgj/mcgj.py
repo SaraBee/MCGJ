@@ -32,7 +32,8 @@ def render_session(session_id):
     session = Session(with_id=session_id)
 
     rows_query = "SELECT * FROM tracks WHERE session_id = ?"
-    rows = db.query(sql=rows_query, args=session_id)
+    rows = db.query(sql=rows_query, args=[session_id])
+
     tracks = [Track(row) for row in rows]
 
     for track in tracks:
