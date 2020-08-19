@@ -6,7 +6,7 @@
 
 <h2>MCG Sessions</h2>
 
-{% for session in sessions|reverse %}
+{% for session in sessions|sort(attribute = 'date', reverse = True) %}
 <a href=/sessions/{{session.id}}>{{session.name}}</a>
 <br/>
 {% endfor %}
