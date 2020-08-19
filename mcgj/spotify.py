@@ -9,7 +9,6 @@ class Spotify:
 
     def getTrackInfo(self, url):
         track = self.sp.track(url)
-        print(track)
         title = track['name']
         artist = track['artists'][0]['name']
         return title, artist
