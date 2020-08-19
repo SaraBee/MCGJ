@@ -12,8 +12,8 @@ c = conn.cursor( )
 #scope = 'playlist-read-collaborative'
 
 # TODO: take playlists as cli args, for now here's the 3/31 playlist as an example
-playlists = ['1lBM0LnIgAIJVyEZMX4Vlg']
 
+playlists = ['5K7aG4H3HvBmOskozM8jT5', '2HNxIaOgXVPcIbRgmv6ek2', '3ArKVzreB7ed4FsImQ16SE', '5k270ftRtIr3CvXlDZSPge', '5BTObgLJeCfLaP8unbefIs', '4eif1kehSfB9Pv9N1A69cb', '0PcwPuj1Tm3DADv28gSXV1', '6Ws4eWvbIvhhpBWEsUm68j', '2xuANJlWP40NizEAwBwlT0', '0Aq8mwBw7V6WCyiqqS7py3', '6m2y6jr5mfHGPnpFNS8WuO', '5dUblrlzZERiYJgXqvuuep', '2hRmqKV1Hrs6agrE0n3Qye', '7wFhp5ZVoVXecMePkYgZX7']
 
 #token = util.prompt_for_user_token(username, scope)
 auth_manager = SpotifyClientCredentials()
@@ -29,7 +29,10 @@ for playlist_id in playlists:
     #2020-03-31T22:33:42Z
     date = datetime.strptime(date_added, '%Y-%m-%dT%H:%M:%SZ')
     date = date.strftime('%Y-%m-%d')
-    spotify_url = playlist['external_urls']['spotify']
+    if 'spotify' in playlist['external_urls']:
+        spotify_url = playlist['external_urls']['spotify']
+    else:
+        spotify_url = ''
     current_round = 1
 
     sql = 'INSERT INTO sessions(create_date, name, date, spotify_url, current_round) VALUES (?,?,?,?,?)'
@@ -47,7 +50,10 @@ for playlist_id in playlists:
         person = track['added_by']['id']
         title = track['track']['name']
         artist = track['track']['artists'][0]['name']
-        url = track['track']['external_urls']['spotify']
+        if 'external_urls' in track['track'] and 'spotify' in track['track']['external_urls']:
+            url = track['track']['external_urls']['spotify']
+        else:
+            url = ''
         played = 1
         round_number = 1 # good enough
 
