@@ -3,6 +3,7 @@ from flask import session as client_session
 import datetime
 from . import db
 from .models import Session, Track
+from . import spotify
 
 # Given a session number, fetch all tracks, and pass an array to the template.
 
@@ -193,6 +194,11 @@ def insert_track():
     # track.person = request.form["person"]
     # track.title = request.form["title"]
     # track.url = request.form["url"]
+    if 'spotify' in track.url and (track.title == '' or track.artist == ''):
+        print('spotify track detected!')
+        s = spotify.Spotify()
+        track.title, track.artist = s.getTrackInfo(track.url)
+
     track.insert()
     print("ID of new track: {}".format(track.id))
     print(track.__dict__)
