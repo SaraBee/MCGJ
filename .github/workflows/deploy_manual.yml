@@ -1,0 +1,28 @@
+
+name: Deploy-Manual
+on:
+  workflow_dispatch:
+
+jobs:
+  DeployMCGJ:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Runs a single command using the runners shell
+    - name: Send Pull Command
+      id: pull-cmd
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{secrets.CONSOLE_URI}}
+        method: POST
+        payload: ${{secrets.PULL_CMD}}
+        headers: ${{secrets.AUTH_HEADER}}
+    - name: Trigger Reload
+      id: reload
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{secrets.RELOAD_URI}}
+        method: POST
+        headers: ${{secrets.AUTH_HEADER}}
