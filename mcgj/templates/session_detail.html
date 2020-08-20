@@ -6,9 +6,9 @@
 <h1>{{session.name}}</h1>
 
 {% if is_driving %}
-<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a> | <a href="/sessions/{{session.id}}/undrive">Stop Driving</a>
+<a href="/">Home</a> | <a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a> | <a href="/sessions/{{session.id}}/undrive">Stop Driving</a>
 {% else %}
-<a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/drive">Drive Session</a>
+<a href="/">Home</a> | <a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/drive">Drive Session</a>
 {% endif %}
 
 <h2>Unplayed Tracks</h2>
@@ -17,7 +17,7 @@
 </p>
 <p>
 {% if unplayed|length > 0 %}
-    <ul>
+    <ul class="track-list">
         {% for track in unplayed %}
         {% if is_driving %}
         <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "unplayed_track_row.html" %} {% endwith %}</li>
@@ -39,7 +39,7 @@
 
 {% for round_num, round_tracks in played.items()|reverse %}
     <h2>Round {{round_num}}</h2>
-    <ul>
+    <ul class="track-list">
         {% for track in round_tracks %}
         {% if is_driving %}
         <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}</li>

@@ -12,55 +12,57 @@
 body {
         background-color: var(--jungle);
         color: var(--platinum);
-        font-family: sans-serif;
+        font-family: Roboto, sans-serif;
+        padding: 5px 25px;
 }
 
-a:link {
-        color: var(--powder);
-}
+h1, h2 { font-family: Raleway, sans-serif; font-weight: 200; }
 
-a:hover {
-        background: var(--slate);
-}
-
-a:visited {
-        color: var(--melon);
-}
+a:link { color: var(--powder); }
+a:hover { background: var(--slate); }
+a:visited { color: var(--melon); }
 
 a.icon-btn {
         text-decoration: none;
         color: var(--powder);
 }
 
-a.icon-btn:visited {
-        color: var(--powder);
-}
-
-a.icon-btn:hover {
-        color: var(--bluebell);
-}
+a.icon-btn:visited { color: var(--powder); }
+a.icon-btn:hover { color: var(--bluebell); }
 
 ul {
         list-style-type: none;
+        padding-inline-start: 20px;
 }
 
-li {
-        padding-left: 3.5em;
+ul.session-list { width: 250px; }
+
+ul.session-list > li {
+        padding: 2px 5px 3px;
+}
+
+ul.track-list > li {
+        padding: 3px 0 3px 3.5em;
         text-indent: -3.5em;
 }
 
-li.odd {
-        background: var(--light-jungle);
+li.odd { background: var(--light-jungle); }
+li:hover { background: var(--slate); }
+
+hr { border-color: var(--light-jungle); }
+
+.session { width: 600px; }
+
+.action-btn {
+        display: inline-block;
+        background-color: var(--light-jungle);
+        border: none;
+        color: var(--powder);
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
 }
 
-li:hover {
-        background: var(--slate);
-}
-
-hr {
-        border-color: var(--light-jungle);
-}
-
-.session {
-        width: 600px;
-}
+.action-btn:hover { background: var(--slate); }
