@@ -18,17 +18,17 @@ body {
 
 h1, h2 { font-family: Raleway, sans-serif; font-weight: 200; }
 
+a { text-decoration: none; }
+
 a:link { color: var(--powder); }
 a:hover { background: var(--slate); }
 a:visited { color: var(--melon); }
 
-a.icon-btn {
-        text-decoration: none;
-        color: var(--powder);
-}
-
+a.icon-btn { color: var(--powder); }
 a.icon-btn:visited { color: var(--powder); }
 a.icon-btn:hover { color: var(--bluebell); }
+
+a.nav { padding: 5px 2px; }
 
 ul {
         list-style-type: none;
@@ -57,8 +57,9 @@ hr { border-color: var(--light-jungle); }
         display: inline-block;
         background-color: var(--light-jungle);
         border: none;
+        border-radius: 2px;
         color: var(--powder);
-        padding: 10px;
+        padding: 7px 10px;
         text-align: center;
         text-decoration: none;
         font-size: 16px;

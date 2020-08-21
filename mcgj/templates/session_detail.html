@@ -6,9 +6,9 @@
 <h1>{{session.name}}</h1>
 
 {% if is_driving %}
-<a href="/">Home</a> | <a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/edit">Edit Session</a> | <a href="/sessions/{{session.id}}/undrive">Stop Driving</a>
+<a class="nav" href="/">Home</a> | <a class="nav" href={{session.spotify_url}}>Spotify Playlist</a> | <a class="nav"  href="/sessions/{{session.id}}/edit">Edit Session</a> | <a class="nav" href="/sessions/{{session.id}}/undrive">Stop Driving</a>
 {% else %}
-<a href="/">Home</a> | <a href={{session.spotify_url}}>Spotify Playlist</a> | <a href="/sessions/{{session.id}}/drive">Drive Session</a>
+<a class="nav" href="/">Home</a> | <a class="nav" href={{session.spotify_url}}>Spotify Playlist</a> | <a class="nav" href="/sessions/{{session.id}}/drive">Drive Session</a>
 {% endif %}
 
 <h2>Unplayed Tracks</h2>
