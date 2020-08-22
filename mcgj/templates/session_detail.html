@@ -2,7 +2,6 @@
 {% block title %}{{session.name}} – Round {{session.current_round}} {% endblock %}
 
 {% block content %}
-<div class="session">
 <h1>{{session.name}}</h1>
 
 {% if is_driving %}
@@ -38,16 +37,28 @@
 {% endif %}
 
 {% for round_num, round_tracks in played.items()|reverse %}
-    <h2>Round {{round_num}}</h2>
-    <ul class="track-list">
+<h2>Round {{round_num}}</h2>
+<div class="round">
+    <div class="tracks">
+        <ul class="track-list">
+            {% for track in round_tracks %}
+            {% if is_driving %}
+            <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}</li>
+            {% else %}
+            <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "user_played_track_row.html" %} {% endwith %}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="artwork">
         {% for track in round_tracks %}
-        {% if is_driving %}
-        <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "played_track_row.html" %} {% endwith %}</li>
-        {% else %}
-        <li class="{{loop.cycle('odd', 'even')}}">{% with position=loop.index, track=track %} {% include "user_played_track_row.html" %} {% endwith %}</li>
+        {% if track.art_url %}
+        <a class="art-link" href="{{track.url}}">
+            <img class="album-cover" src="{{track.art_url}}" width="100"/>
+        </a>
         {% endif %}
         {% endfor %}
-    </ul>
-{% endfor %}
+    </div>
 </div>
+{% endfor %}
 {% endblock %}

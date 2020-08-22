@@ -137,6 +137,10 @@ def update_track(track_id):
     track.title = request.form["title"] if request.form["title"] != "" else None
     track.artist = request.form["artist"] if request.form["artist"] != "" else None
     track.url = request.form["url"] if request.form["url"] != "" else None
+    if spotify.isSpotifyTrack(track.url) and not (track.title and track.artist):
+        print('spotify track detected!')
+        sc = spotify.SpotifyClient()
+        track.title, track.artist, track.art_url = sc.getTrackInfo(track.url)
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
@@ -194,10 +198,10 @@ def insert_track():
     # track.person = request.form["person"]
     # track.title = request.form["title"]
     # track.url = request.form["url"]
-    if 'spotify' in track.url and (track.title == '' or track.artist == ''):
+    if spotify.isSpotifyTrack(track.url) and not (track.title and track.artist):
         print('spotify track detected!')
-        s = spotify.Spotify()
-        track.title, track.artist = s.getTrackInfo(track.url)
+        sc = spotify.SpotifyClient()
+        track.title, track.artist, track.art_url = sc.getTrackInfo(track.url)
 
     track.insert()
     print("ID of new track: {}".format(track.id))

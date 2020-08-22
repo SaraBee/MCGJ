@@ -28,10 +28,13 @@ a.icon-btn { color: var(--powder); }
 a.icon-btn:visited { color: var(--powder); }
 a.icon-btn:hover { color: var(--bluebell); }
 
+a.art-link:hover { background: var(--jungle); }
+
 a.nav { padding: 5px 2px; }
 
 ul {
         list-style-type: none;
+        margin-block-start: 0;
         padding-inline-start: 20px;
 }
 
@@ -44,6 +47,7 @@ ul.session-list > li {
 ul.track-list > li {
         padding: 3px 0 3px 3.5em;
         text-indent: -3.5em;
+        width: 600px;
 }
 
 li.odd { background: var(--light-jungle); }
@@ -51,10 +55,12 @@ li:hover { background: var(--slate); }
 
 hr { border-color: var(--light-jungle); }
 
-.session { width: 600px; }
+.round { display: flex; }
+.artwork { flex: 1; margin-left: 20px; min-width: 450px; max-width: 700px;}
 
 .action-btn {
         display: inline-block;
+        margin: 1em 0;
         background-color: var(--light-jungle);
         border: none;
         border-radius: 2px;
@@ -67,3 +73,5 @@ hr { border-color: var(--light-jungle); }
 }
 
 .action-btn:hover { background: var(--slate); }
+.album-cover { opacity: 0.5; }
+.album-cover:hover { opacity: 1; }
