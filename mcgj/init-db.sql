@@ -23,6 +23,7 @@ CREATE TABLE tracks (
     title TEXT,
     artist TEXT,
     url TEXT,
+    art_url TEXT,
     session_id INTEGER,
     played INTEGER,
     round_number INTEGER
