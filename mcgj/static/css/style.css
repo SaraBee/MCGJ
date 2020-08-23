@@ -16,7 +16,11 @@ body {
         padding: 5px 25px;
 }
 
-h1, h2 { font-family: Raleway, sans-serif; font-weight: 200; }
+h1, h2 {
+        font-family: Raleway, sans-serif;
+        font-weight: 200;
+        margin: 16px 0;
+}
 
 a { text-decoration: none; }
 
@@ -34,8 +38,8 @@ a.nav { padding: 5px 2px; }
 
 ul {
         list-style-type: none;
-        margin-block-start: 0;
         padding-inline-start: 20px;
+        margin: 0;
 }
 
 ul.session-list { width: 250px; }
@@ -45,7 +49,7 @@ ul.session-list > li {
 }
 
 ul.track-list > li {
-        padding: 3px 0 3px 3.5em;
+        padding: 3px 2px 3px 3.5em;
         text-indent: -3.5em;
         width: 600px;
 }
@@ -53,14 +57,22 @@ ul.track-list > li {
 li.odd { background: var(--light-jungle); }
 li:hover { background: var(--slate); }
 
-hr { border-color: var(--light-jungle); }
+hr {
+        margin: 1em 0;
+        border: 1px solid  var(--light-jungle);
+}
 
-.round { display: flex; }
-.artwork { flex: 1; margin-left: 20px; min-width: 450px; max-width: 700px;}
+.dash { display: flex; }
+.next-up { margin-left: 20px; width: 300px; }
+.next-up > ul > li { padding: 2px 5px 3px; }
+
+.round { margin: 0 0 1em 0; }
+.round-container { display: flex; }
+.artwork { flex: 1; margin-left: 20px; min-width: 450px; max-width: 700px; }
 
 .action-btn {
         display: inline-block;
-        margin: 1em 0;
+        margin: 0 0 10px 0;
         background-color: var(--light-jungle);
         border: none;
         border-radius: 2px;
@@ -71,7 +83,9 @@ hr { border-color: var(--light-jungle); }
         font-size: 16px;
         cursor: pointer;
 }
-
 .action-btn:hover { background: var(--slate); }
+.button-grp { width: 100%; margin: 16px 0 0 0; }
+.button-grp > form { display: inline-block;}
+
 .album-cover { opacity: 0.5; }
 .album-cover:hover { opacity: 1; }

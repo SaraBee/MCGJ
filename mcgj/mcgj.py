@@ -53,7 +53,12 @@ def render_session(session_id):
     if 'driving' in client_session:
         is_driving = client_session['driving'].get(session_id)
 
-    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving)
+    # folks who have already gone this round
+    round_users = [track.person for track in played_tracks[session.current_round]]
+    # unique list of folks who haven't gone yet this round
+    next_up = {track.person for track in unplayed_tracks if track.person not in round_users}
+
+    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
 
 @bp.route("/sessions/<session_id>/drive")
 def driveSession(session_id):
