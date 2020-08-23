@@ -190,7 +190,9 @@ def delete_track(track_id):
 def render_new_track():
     """Create a new track"""
     session = Session(with_id=request.args["session_id"])
-    return render_template("new_track.html", session=session)
+    if 'name' not in client_session:
+        client_session['name'] = ''
+    return render_template("new_track.html", session=session, name=client_session['name'])
 
 
 # TODO: Could probably be "tracks/insert"
@@ -203,6 +205,10 @@ def insert_track():
     # track.person = request.form["person"]
     # track.title = request.form["title"]
     # track.url = request.form["url"]
+
+    # update the cookie to store the name for next time on this form
+    client_session['name'] = track.person
+
     if spotify.isSpotifyTrack(track.url) and not (track.title and track.artist):
         print('spotify track detected!')
         sc = spotify.SpotifyClient()

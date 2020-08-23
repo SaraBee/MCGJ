@@ -5,7 +5,7 @@
 {% block content %}
 <form method="POST" action="/insert_track">
    Session ID: <input type="text" name="session_id" value="{{session.id}}" required><br>
-   Person Name: <input type="text" name="person"><br>
+   Person Name: <input type="text" name="person" value="{{name}}"><br>
    Track Title: <input type="text" name="title"><br>
    Track Artist (Optional) <input type="text" name="artist"><br>
    Track URL: <input type="text" name="url"><br>
