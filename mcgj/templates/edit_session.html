@@ -3,11 +3,11 @@
 {% block title %}Edit Session{% endblock %}
 
 {% block content %}
-<form method="POST" action="/sessions/{{session.id}}/update">
-    Session Name: <input type="text" name="name" value="{{session.name if session.name != None}}" required><br>
-    Spotify URL: <input type="text" name="spotify_url" value="{{session.spotify_url if session.spotify_url != None}}"><br>
-    Current Round: <input type="text" name="current_round" value="{{session.current_round if session.current_round != None}}">
-    (For debugging purposes. Probably best not to touch this.)<br>
-    <input type="submit" value="Save">
+<h1>Edit Session {{session.id}}</h1>
+<form class="edit-form" method="POST" action="/sessions/{{session.id}}/update">
+    <label for="name">Session Name</label><input type="text" name="name" value="{{session.name if session.name != None}}" required>
+    <label for="spotify_url">Spotify URL</label><input type="text" name="spotify_url" value="{{session.spotify_url if session.spotify_url != None}}">
+    <label for="current_round">Current Round</label><input type="text" name="current_round" value="{{session.current_round if session.current_round != None}}">
+    <input class="action-btn" type="submit" value="Save">
 </form>
 {% endblock %}

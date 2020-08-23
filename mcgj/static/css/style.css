@@ -70,6 +70,18 @@ hr {
 .round-container { display: flex; }
 .artwork { flex: 1; margin-left: 20px; min-width: 450px; max-width: 700px; }
 
+.edit-form {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-gap: 5px;
+}
+.edit-form > label       { text-align: right; }
+.edit-form > label:after { content: ":"; }
+.edit-form > .action-btn { grid-column: 2; justify-self: end; margin: 10px 0;}
+
+.edit-data { margin: 0 0 16px 0; line-height: 1.5em; }
+.edit-data > ul > li { width: 600px; }
+
 .action-btn {
         display: inline-block;
         margin: 0 0 10px 0;

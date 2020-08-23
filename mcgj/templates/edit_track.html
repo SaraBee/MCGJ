@@ -3,20 +3,23 @@
 {% block title %}Edit Track{% endblock %}
 
 {% block content %}
-<p><b>Editing Track:</b> {{track.person}}: <a href="{{track.absolute_url() if track.url != None}}" target="_blank">{{track.artist_title()}}</a><br>
-
-{% if track.played == 1 %}
-    <i>Played, timestamp: {{track.cue_date}}.</i>
-{% else %}
-    <i>Unplayed</i>
-{% endif %}
-</p>
-
-<form method="POST" action="/tracks/{{track.id}}/update">
-    Person Name: <input type="text" name="person" value="{{track.person if track.person != None}}" required><br>
-    Track Title: <input type="text" name="title" value="{{track.title if track.title != None}}"><br>
-    Track Artist (Optional): <input type="text" name="artist" value="{{track.artist if track.artist != None}}"><br>
-    Track URL: <input type="text" name="url" value="{{track.url if track.url != None}}"><br>
-    <input type="submit" value="Save">
+<h1>Edit Track</h1>
+<form class="edit-form" method="POST" action="/tracks/{{track.id}}/update">
+    <label for="person">Your Name</label><input type="text" name="person" value="{{track.person if track.person != None}}" required>
+    <label for="url">Track URL</label><input type="text" name="url" value="{{track.url if track.url != None}}">
+    <label for="title">Track Title</label><input type="text" name="title" value="{{track.title if track.title != None}}">
+    <label for="artist">Track Artist</label><input type="text" name="artist" value="{{track.artist if track.artist != None}}">
+    <input class="action-btn" type="submit" value="Save">
 </form>
+<div class="edit-data">
+    Currently editing:
+    <ul>
+        <li>{{track.person}}: <a href="{{track.absolute_url() if track.url != None}}" target="_blank">{{track.artist_title()}}</a></li>
+        {% if track.played == 1 %}
+        <li><i>Played, timestamp: {{track.cue_date}}.</i></li>
+        {% else %}
+        <li><i>Unplayed</i></li>
+        {% endif %}
+    </ul>
+</div>
 {% endblock %}
