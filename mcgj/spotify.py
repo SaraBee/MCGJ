@@ -3,7 +3,7 @@ import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 
 def isSpotifyTrack(url):
-    return 'open.spotify.com' in url
+    return 'open.spotify.com' in url if url else False
 
 class SpotifyClient:
     def __init__(self):
