@@ -142,15 +142,18 @@ def update_track(track_id):
     track.title = request.form["title"] if request.form["title"] != "" else None
     track.artist = request.form["artist"] if request.form["artist"] != "" else None
     track.url = request.form["url"] if request.form["url"] != "" else None
+    sc = spotify.SpotifyClient()
     if spotify.isSpotifyTrack(track.url):
         print('spotify track detected!')
-        sc = spotify.SpotifyClient()
         spotify_title, spotify_artist, spotify_art_url = sc.getTrackInfo(track.url)
         if not track.title:
             track.title = spotify_title
         if not track.artist:
             track.title = spotify_artist
         track.art_url = spotify_art_url
+    else:
+        track.art_url = sc.getNonSpotifyArtwork(track)
+
     track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
@@ -214,10 +217,12 @@ def insert_track():
     # update the cookie to store the name for next time on this form
     client_session['name'] = track.person
 
+    sc = spotify.SpotifyClient()
     if spotify.isSpotifyTrack(track.url) and not (track.title and track.artist):
         print('spotify track detected!')
-        sc = spotify.SpotifyClient()
         track.title, track.artist, track.art_url = sc.getTrackInfo(track.url)
+    else:
+        track.art_url = sc.getNonSpotifyArtwork(track)
 
     track.insert()
     print("ID of new track: {}".format(track.id))

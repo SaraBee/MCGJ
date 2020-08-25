@@ -23,3 +23,12 @@ class SpotifyClient:
         art_url = track['album']['images'][0]['url']
         return art_url
 
+    def getNonSpotifyArtwork(self, track):
+        title = track.title if track.title else ''
+        artist = track.artist if track.artist else ''
+        query = title + ' ' + artist
+        results = self.spotipy.search(query, type='track')
+        if results['tracks']['items']:
+            return results['tracks']['items'][0]['album']['images'][0]['url']
+        return ''
+
