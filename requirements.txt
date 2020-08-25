@@ -8,3 +8,5 @@ Werkzeug==1.0.1
 -e .
 python-dotenv
 spotipy
+beautifulsoup4==4.9.1
+requests==2.24.0
