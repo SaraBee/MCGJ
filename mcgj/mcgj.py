@@ -3,7 +3,7 @@ from flask import session as client_session
 import datetime
 from . import db
 from .models import Session, Track
-from . import spotify
+from . import services
 
 # Given a session number, fetch all tracks, and pass an array to the template.
 
@@ -142,15 +142,24 @@ def update_track(track_id):
     track.title = request.form["title"] if request.form["title"] != "" else None
     track.artist = request.form["artist"] if request.form["artist"] != "" else None
     track.url = request.form["url"] if request.form["url"] != "" else None
-    sc = spotify.SpotifyClient()
-    if spotify.isSpotifyTrack(track.url):
-        print('spotify track detected!')
+    sc = services.SpotifyClient()
+    bc = services.BandcampClient()
+    if sc.isSpotifyTrack(track.url):
+        print("Spotify track detected!")
         spotify_title, spotify_artist, spotify_art_url = sc.getTrackInfo(track.url)
         if not track.title:
             track.title = spotify_title
         if not track.artist:
             track.title = spotify_artist
         track.art_url = spotify_art_url
+    elif bc.isBandcampTrack(track.url):
+        print("Bandcamp track detected!")
+        bandcamp_title, bandcamp_artist, bandcamp_art_url = bc.getTrackInfo(track.url)
+        if not track.title:
+            track.title = bandcamp_title
+        if not track.artist:
+            track.title = bandcamp_artist
+        track.art_url = bandcamp_art_url
     else:
         track.art_url = sc.getNonSpotifyArtwork(track)
 
@@ -217,10 +226,24 @@ def insert_track():
     # update the cookie to store the name for next time on this form
     client_session['name'] = track.person
 
-    sc = spotify.SpotifyClient()
-    if spotify.isSpotifyTrack(track.url) and not (track.title and track.artist):
-        print('spotify track detected!')
-        track.title, track.artist, track.art_url = sc.getTrackInfo(track.url)
+    sc = services.SpotifyClient()
+    bc = services.BandcampClient()
+    if sc.isSpotifyTrack(track.url):
+        print("Spotify track detected!")
+        spotify_title, spotify_artist, spotify_art_url = sc.getTrackInfo(track.url)
+        if not track.title:
+            track.title = spotify_title
+        if not track.artist:
+            track.title = spotify_artist
+        track.art_url = spotify_art_url
+    elif bc.isBandcampTrack(track.url):
+        print("Bandcamp track detected!")
+        bandcamp_title, bandcamp_artist, bandcamp_art_url = bc.getTrackInfo(track.url)
+        if not track.title:
+            track.title = bandcamp_title
+        if not track.artist:
+            track.title = bandcamp_artist
+        track.art_url = bandcamp_art_url
     else:
         track.art_url = sc.getNonSpotifyArtwork(track)
 

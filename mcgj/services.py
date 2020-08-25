@@ -1,15 +1,17 @@
 import spotipy
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
+import requests
+from bs4 import BeautifulSoup
 
-def isSpotifyTrack(url):
-    return 'open.spotify.com' in url if url else False
 
 class SpotifyClient:
     def __init__(self):
         auth_manager = SpotifyClientCredentials()
         self.spotipy = spotipy.Spotify(auth_manager=auth_manager)
 
+    def isSpotifyTrack(url):
+        return 'open.spotify.com' in url if url else False
 
     def getTrackInfo(self, url):
         track = self.spotipy.track(url)
@@ -32,3 +34,20 @@ class SpotifyClient:
             return results['tracks']['items'][0]['album']['images'][0]['url']
         return ''
 
+
+class BandcampClient:
+    def __init__(self):
+        return
+
+    def isBandcampTrack(url):
+        return 'bandcamp.com' in url if url else False
+
+    def getTrackInfo(self, url):
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        name_section = soup.find(attrs = {"id": "name-section"})
+
+        title = name_section.find(attrs={"itemprop": "name"}).text.strip()
+        artist = name_section.find(attrs={"itemprop": "byArtist"}).text.strip()
+        art_url = soup.find("img", {"itemprop": "image"})["src"]
+        return title, artist, art_url
