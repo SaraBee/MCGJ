@@ -32,7 +32,7 @@ playlist = sp.user_playlist_create(user, playlist_name)
 
 playlist_id = playlist['id']
 
-tracks_sql= 'select * from tracks where session_id = ?'
+tracks_sql= 'select * from tracks where session_id = ? order by cue_date'
 c.execute(tracks_sql, session)
 tracks = c.fetchall()
 
