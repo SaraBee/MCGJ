@@ -150,7 +150,7 @@ def update_track(track_id):
         if not track.title:
             track.title = spotify_title
         if not track.artist:
-            track.title = spotify_artist
+            track.artist = spotify_artist
         track.art_url = spotify_art_url
     elif bc.isBandcampTrack(track.url):
         print("Bandcamp track detected!")
@@ -158,7 +158,7 @@ def update_track(track_id):
         if not track.title:
             track.title = bandcamp_title
         if not track.artist:
-            track.title = bandcamp_artist
+            track.artist = bandcamp_artist
         track.art_url = bandcamp_art_url
     else:
         track.art_url = sc.getNonSpotifyArtwork(track)
@@ -234,7 +234,7 @@ def insert_track():
         if not track.title:
             track.title = spotify_title
         if not track.artist:
-            track.title = spotify_artist
+            track.artist = spotify_artist
         track.art_url = spotify_art_url
     elif bc.isBandcampTrack(track.url):
         print("Bandcamp track detected!")
@@ -242,7 +242,7 @@ def insert_track():
         if not track.title:
             track.title = bandcamp_title
         if not track.artist:
-            track.title = bandcamp_artist
+            track.artist = bandcamp_artist
         track.art_url = bandcamp_art_url
     else:
         track.art_url = sc.getNonSpotifyArtwork(track)

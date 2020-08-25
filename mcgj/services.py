@@ -10,7 +10,7 @@ class SpotifyClient:
         auth_manager = SpotifyClientCredentials()
         self.spotipy = spotipy.Spotify(auth_manager=auth_manager)
 
-    def isSpotifyTrack(url):
+    def isSpotifyTrack(self, url):
         return 'open.spotify.com' in url if url else False
 
     def getTrackInfo(self, url):
@@ -39,7 +39,7 @@ class BandcampClient:
     def __init__(self):
         return
 
-    def isBandcampTrack(url):
+    def isBandcampTrack(self, url):
         return 'bandcamp.com' in url if url else False
 
     def getTrackInfo(self, url):
