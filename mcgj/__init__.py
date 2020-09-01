@@ -17,7 +17,7 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     if app.config.get('ENABLE_PROXYFIX'):
-        app.wsgi_app = ProxyFix(app.wsgi_app)
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 
     # ensure the instance folder exists
     try:
