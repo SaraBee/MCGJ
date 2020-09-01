@@ -49,9 +49,14 @@ ul.session-list > li {
 }
 
 ul.track-list > li {
-        padding: 3px 2px 3px 3.5em;
-        text-indent: -3.5em;
+        padding: 3px 2px 3px;
         width: 600px;
+}
+
+.track-container {
+        display: grid;
+        grid-template-columns: max-content auto;
+        column-gap: 5px
 }
 
 li.odd { background: var(--light-jungle); }
