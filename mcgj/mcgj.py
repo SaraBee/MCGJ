@@ -111,15 +111,6 @@ def next_round(session_id):
     session = Session(with_id=session_id)
     session.current_round += 1
     session.update()
-    # TODO: This is where code would go to check the Zoom API to auto-populate the list of ppl
-
-    rows_query = "SELECT * FROM tracks WHERE (session_id = ? AND round_number = ? AND played = 1)"
-    prev_round_tracks = db.query(sql=rows_query, args=[session.id, session.current_round - 1])
-
-    for prev_track in prev_round_tracks:
-        new_track = Track(session_id = session.id, person = prev_track["person"])
-        new_track.insert()
-
 
     return redirect(url_for('mcgj.render_session', session_id=session.id))
 
