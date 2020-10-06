@@ -3,6 +3,16 @@ from spotipy.oauth2 import SpotifyOAuth
 import argparse
 import sqlite3
 import urllib
+import sys
+import os
+from dotenv import load_dotenv
+
+'''
+Script to export session to Spotify playlist
+Run from top level project directory (where .env and mcgj.db live)
+'''
+
+load_dotenv('.env')
 
 
 scope = "playlist-modify-public"
@@ -60,4 +70,11 @@ for track in tracks:
         spotify_tracks.append(spotify_track)
 
 result = sp.user_playlist_add_tracks(user, playlist_id, spotify_tracks)
-print(result)
+
+if result:
+    session_update_sql = 'update sessions set spotify_url = ? where id = ?'
+    session_update = (playlist['external_urls']['spotify'], session_id)
+
+    c.execute(session_update_sql, session_update)
+    conn.commit()
+    print('Created playlist: ' + playlist['external_urls']['spotify'])

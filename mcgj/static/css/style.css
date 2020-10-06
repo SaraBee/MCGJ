@@ -49,9 +49,14 @@ ul.session-list > li {
 }
 
 ul.track-list > li {
-        padding: 3px 2px 3px 3.5em;
-        text-indent: -3.5em;
+        padding: 3px 2px 3px;
         width: 600px;
+}
+
+.track-container {
+        display: grid;
+        grid-template-columns: max-content auto;
+        column-gap: 5px
 }
 
 li.odd { background: var(--light-jungle); }
@@ -68,7 +73,7 @@ hr {
 
 .round { margin: 0 0 1em 0; }
 .round-container { display: flex; }
-.artwork { flex: 1; margin-left: 20px; min-width: 450px; max-width: 700px; }
+.artwork { margin-left: 20px; width: 450px; }
 
 .edit-form {
     display: grid;
