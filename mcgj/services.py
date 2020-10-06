@@ -43,7 +43,12 @@ class BandcampClient:
         return 'bandcamp.com' in url if url else False
 
     def getTrackInfo(self, url):
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except:
+            print("Could not fetch Bandcamp page.")
+            print(url)
+            return None, None, None
         soup = BeautifulSoup(response.text, "html.parser")
         name_section = soup.find(attrs = {"id": "name-section"})
 
