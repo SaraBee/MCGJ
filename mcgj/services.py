@@ -10,7 +10,7 @@ class SpotifyClient:
         auth_manager = SpotifyClientCredentials()
         self.spotipy = spotipy.Spotify(auth_manager=auth_manager)
 
-    def isSpotifyTrack(self, url):
+    def isSpotifyTrack(url):
         return 'open.spotify.com' in url if url else False
 
     def getTrackInfo(self, url):
@@ -39,20 +39,21 @@ class BandcampClient:
     def __init__(self):
         return
 
-    def isBandcampTrack(self, url):
+    def isBandcampTrack(url):
         return 'bandcamp.com' in url if url else False
 
     def getTrackInfo(self, url):
         try:
             response = requests.get(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+            name_section = soup.find(attrs={"id": "name-section"})
+
+            title = name_section.find(attrs={"itemprop": "name"}).text.strip()
+            artist = name_section.find(attrs={"itemprop": "byArtist"}).text.strip()
+            art_url = soup.find("img", {"itemprop": "image"})["src"]
         except:
-            print("Could not fetch Bandcamp page.")
+            print("Could not extract info from Bandcamp.")
             print(url)
             return None, None, None
-        soup = BeautifulSoup(response.text, "html.parser")
-        name_section = soup.find(attrs = {"id": "name-section"})
 
-        title = name_section.find(attrs={"itemprop": "name"}).text.strip()
-        artist = name_section.find(attrs={"itemprop": "byArtist"}).text.strip()
-        art_url = soup.find("img", {"itemprop": "image"})["src"]
         return title, artist, art_url
