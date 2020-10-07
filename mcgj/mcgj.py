@@ -253,6 +253,3 @@ def insert_session():
     sess.current_round = 1
     sess.insert()
     return redirect(url_for('mcgj.render_session', session_id=sess.id))
-
-
-
