@@ -3,6 +3,8 @@ import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
+import re
 
 
 class SpotifyClient:
@@ -47,10 +49,15 @@ class BandcampClient:
             response = requests.get(url)
             soup = BeautifulSoup(response.text, "html.parser")
             name_section = soup.find(attrs={"id": "name-section"})
+            domain = urlparse(url).netloc
+            title = name_section.find(attrs={"class": "trackTitle"}).text.strip()
+            artist = name_section.find("a", href=re.compile(domain)).text.strip()
+            art_url = soup.find("a", {"class": "popupImage"}).img["src"]
 
-            title = name_section.find(attrs={"itemprop": "name"}).text.strip()
-            artist = name_section.find(attrs={"itemprop": "byArtist"}).text.strip()
-            art_url = soup.find("img", {"itemprop": "image"})["src"]
+            # This was the old way of finding the artist and track title. I dunno if they're still valid sometimes, so leaving them here for now? 2020-10-06
+            # title = name_section.find(attrs={"itemprop": "name"}).text.strip()
+            # artist = name_section.find(attrs={"itemprop": "byArtist"}).text.strip()
+            # art_url = soup.find("img", {"itemprop": "image"})["src"]
         except:
             print("Could not extract info from Bandcamp.")
             print(url)
