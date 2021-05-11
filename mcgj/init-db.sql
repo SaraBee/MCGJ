@@ -20,6 +20,7 @@ CREATE TABLE tracks (
     update_date TIMESTAMP,
     cue_date TIMESTAMP,
     person TEXT,
+    user_id INTEGER,
     title TEXT,
     artist TEXT,
     url TEXT,
@@ -27,4 +28,13 @@ CREATE TABLE tracks (
     session_id INTEGER,
     played INTEGER,
     round_number INTEGER
+);
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rc_id INTEGER,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    name TEXT,
+    nickname TEXT
 );

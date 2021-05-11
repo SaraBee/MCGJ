@@ -95,3 +95,7 @@ class Track(SQLite3BackedObject):
 class Session(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="sessions", **kwargs)
+
+class User(SQLite3BackedObject):
+    def __init__(self, *args, with_id=None, **kwargs):
+        super().__init__(*args, with_id=with_id, table="users", **kwargs)
