@@ -5,6 +5,7 @@ from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
 from . import db
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
