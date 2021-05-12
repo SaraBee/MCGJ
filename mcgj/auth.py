@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for
 import logging
-from authlib.flask.client import OAuth
+from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
 from . import db
 
