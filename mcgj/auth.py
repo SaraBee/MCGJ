@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
 import logging
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
@@ -6,7 +6,7 @@ from . import db
 
 bp = Blueprint('auth', __name__)
 
-rc = OAuth(app).register(
+rc = OAuth(current_app).register(
     'Recurse Center',
     api_base_url='https://www.recurse.com/api/v1/',
     authorize_url='https://www.recurse.com/oauth/authorize',
