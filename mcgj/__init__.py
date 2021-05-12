@@ -1,11 +1,12 @@
 import os
 from flask import Flask
-from . import db, mcgj
+from flask_login import LoginManager
+from . import db, mcgj, auth
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 def create_app(test_config=None):
-    """Create and configure an instance of the Flask application."""
+    #Create and configure an instance of the Flask application.
     app = Flask(__name__, instance_relative_config=False, static_url_path='')
     app.secret_key = 'dev'
 
@@ -26,10 +27,21 @@ def create_app(test_config=None):
         pass
 
     # register the database commands
-
     db.init_app(app)
 
     app.register_blueprint(mcgj.bp)
+    app.register_blueprint(auth.bp)
     app.register_blueprint(db.bp)
 
+    """
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+    from .models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return User(with_id=int(user_id))
+    """
     return app

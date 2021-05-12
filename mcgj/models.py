@@ -3,6 +3,7 @@ from . import db
 from copy import copy
 import datetime
 from re import match
+from flask_login import UserMixin
 
 # This track object should be initialized with a sqlite3.Row.
 # There should be accessors for properties, and setters.
@@ -96,6 +97,6 @@ class Session(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="sessions", **kwargs)
 
-class User(SQLite3BackedObject):
+class User(SQLite3BackedObject, UserMixin):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="users", **kwargs)
