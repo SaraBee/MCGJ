@@ -1,8 +1,13 @@
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
 import logging
+import os
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
 from . import db
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 bp = Blueprint('auth', __name__)
 
@@ -11,11 +16,11 @@ rc = OAuth(current_app).register(
     api_base_url='https://www.recurse.com/api/v1/',
     authorize_url='https://www.recurse.com/oauth/authorize',
     access_token_url='https://www.recurse.com/oauth/token',
-    client_id=get_env_var('CLIENT_ID'),
-    client_secret=get_env_var('CLIENT_SECRET'),
+    client_id=os.getenv('CLIENT_ID'),
+    client_secret=os.getenv('CLIENT_SECRET'),
 )
 
-token = get_env_var('RC_API_ACCESS_TOKEN')
+token = os.getenv('RC_API_ACCESS_TOKEN')
 
 @bp.route('/login')
 def login():
@@ -28,7 +33,7 @@ def logout():
 @bp.route('/auth/recurse')
 def auth_recurse_redirect():
     "Redirect to the Recurse Center OAuth2 endpoint"
-    callback = get_env_var('CLIENT_CALLBACK')
+    callback = os.getenv('CLIENT_CALLBACK')
     return rc.authorize_redirect(callback)
 
 @bp.route('/auth/callback', methods=['GET', 'POST'])
