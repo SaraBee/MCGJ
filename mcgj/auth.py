@@ -3,10 +3,10 @@ from . import db
 
 bp = Blueprint('auth', __name__)
 
-@auth.route('/login')
+@bp.route('/login')
 def login():
     return 'Login'
 
-@auth.route('/logout')
+@bp.route('/logout')
 def logout():
     return 'Logout'
