@@ -55,11 +55,22 @@ def auth_recurse_callback():
             'error_description': request.args.get('error_description', '(no error description'),
         }), 403)
 
-    me = get_rc_profile()
-    logging.info("Logged in: %s", me.get('name', ''))
+    rc_user = get_rc_profile()
+    user = User(rc_user.get('id', ''))
+    user.name = rc_user.get('name', '')
 
-    return redirect(url_for('index'))
+    # yeah maybe this shouldn't be a one-off query
+    user_query = "SELECT * FROM users WHERE id = ?"
+    user_rows = db.query(sql=user_query, args=[user.id])
+    if user_rows == None:
+	user.insert()
+    else:
+	# in case the name has updated on the RC side
+	user.update()
 
+    logging.info("Logged in: %s", rc_user.get('name', ''))
+
+    return redirect(url_for('mcgj.index'))
 
 def get_rc_profile():
     "Return the RC API information for the currently logged in user"
@@ -71,7 +82,7 @@ def get_rc_profile():
     if r.status_code != requests.codes['ok']:
         r.raise_for_status()
 
-    me = r.json()
+    profile = r.json()
 
-    return me
+    return profile
 

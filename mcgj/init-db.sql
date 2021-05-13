@@ -31,8 +31,7 @@ CREATE TABLE tracks (
 );
 
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    rc_id INTEGER,
+    id INTEGER PRIMARY KEY,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP,
     name TEXT,

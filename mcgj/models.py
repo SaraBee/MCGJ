@@ -28,9 +28,13 @@ class SQLite3BackedObject:
                 [with_id],
                 one=True
             )
-            # Add the query row to the *args,
-            # which we treat as dictionaries next.
-            args += (row, )
+            # If the row hasn't been created yet, set the id manually
+            if row == None:
+                setattr(self, "id", with_id)
+            else:
+                # Add the query row to the *args,
+                # which we treat as dictionaries next.
+                args += (row, )
         for row in args:
             for key in row:
                 setattr(self, key, row[key])
@@ -38,8 +42,6 @@ class SQLite3BackedObject:
             setattr(self, key, kwargs[key])
 
     def insert(self):
-        if hasattr(self, "id"):
-            raise AttributeError("This object already has an id, so I assume it already exists in the database.")
         self.create_date = datetime.datetime.now()
         self.update_date = datetime.datetime.now()
         properties = copy(self.__dict__)
