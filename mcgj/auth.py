@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
 from dotenv import load_dotenv
