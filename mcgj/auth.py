@@ -22,8 +22,6 @@ rc = OAuth(current_app).register(
     client_secret=os.getenv('CLIENT_SECRET'),
 )
 
-token = os.getenv('RC_API_ACCESS_TOKEN')
-
 @bp.route('/login_test')
 def login():
     if current_user.is_authenticated:
@@ -81,10 +79,9 @@ def auth_recurse_callback():
 def get_rc_profile():
     "Return the RC API information for the currently logged in user"
 
-    headers = {'Authorization': f'Bearer {token}'}
     url = 'https://www.recurse.com/api/v1/profiles/me'
 
-    r = requests.get(url, headers=headers)
+    r = rc.get(url)
     if r.status_code != requests.codes['ok']:
         r.raise_for_status()
 
