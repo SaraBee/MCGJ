@@ -63,10 +63,10 @@ def auth_recurse_callback():
     user_query = "SELECT * FROM users WHERE id = ?"
     user_rows = db.query(sql=user_query, args=[user.id])
     if user_rows == None:
-	user.insert()
+        user.insert()
     else:
-	# in case the name has updated on the RC side
-	user.update()
+        # in case the name has updated on the RC side
+        user.update()
 
     logging.info("Logged in: %s", rc_user.get('name', ''))
 
