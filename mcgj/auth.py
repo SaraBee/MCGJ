@@ -1,11 +1,12 @@
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
-import logging
-import os
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
-from . import db
 from dotenv import load_dotenv
+import logging
+import os
 import requests
+from . import db
+from .models import User
 
 load_dotenv()
 
