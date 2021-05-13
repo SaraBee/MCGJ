@@ -57,13 +57,13 @@ def auth_recurse_callback():
         }), 403)
 
     rc_user = get_rc_profile()
-    user = User(rc_user.get('id', ''))
+    user = User(with_id=rc_user.get('id', ''))
     user.name = rc_user.get('name', '')
 
     # yeah maybe this shouldn't be a one-off query
     user_query = "SELECT * FROM users WHERE id = ?"
-    user_rows = db.query(sql=user_query, args=[user.id])
-    if user_rows == None:
+    user_row = db.query(sql=user_query, args=[user.id])
+    if not user_row:
         user.insert()
     else:
         # in case the name has updated on the RC side

@@ -29,7 +29,7 @@ class SQLite3BackedObject:
                 one=True
             )
             # If the row hasn't been created yet, set the id manually
-            if row == None:
+            if not row:
                 setattr(self, "id", with_id)
             else:
                 # Add the query row to the *args,
