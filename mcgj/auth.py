@@ -1,4 +1,5 @@
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
+from flask_login import current_user, login_user, logout_user
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
 from dotenv import load_dotenv
@@ -9,7 +10,6 @@ from . import db
 from .models import User
 
 load_dotenv()
-
 
 bp = Blueprint('auth', __name__)
 
@@ -24,13 +24,18 @@ rc = OAuth(current_app).register(
 
 token = os.getenv('RC_API_ACCESS_TOKEN')
 
-@bp.route('/login')
+@bp.route('/login_test')
 def login():
-    return 'Login'
+    if current_user.is_authenticated:
+        return current_user.name
+    else:
+        return 'Not logged in'
 
 @bp.route('/logout')
+@login_required
 def logout():
-    return 'Logout'
+    logout_user()
+    return redirect(url_for('mcgj.index'))
 
 @bp.route('/auth/recurse')
 def auth_recurse_redirect():
@@ -68,7 +73,7 @@ def auth_recurse_callback():
     else:
         # in case the name has updated on the RC side
         user.update()
-
+    login_user(user)
     logging.info("Logged in: %s", rc_user.get('name', ''))
 
     return redirect(url_for('mcgj.index'))
