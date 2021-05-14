@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask import session as client_session
-from flask_login import current_user
+from flask_login import current_user, login_required
 import datetime
 from . import db
 from .models import Session, Track
