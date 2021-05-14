@@ -214,7 +214,12 @@ def cue_track(track_id):
     track.round_number = session.current_round
     track.played = 1
     track.cue_date = datetime.datetime.now()
-    track.update()
+
+    is_driving = False
+    if 'driving' in client_session:
+        is_driving = client_session['driving'].get(track.session_id)
+    if track.user_id == current_user.id || is_driving == True
+        track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
@@ -235,7 +240,11 @@ def uncue_track(track_id):
 def delete_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
-    track.delete()
+    is_driving = False
+    if 'driving' in client_session:
+        is_driving = client_session['driving'].get(track.session_id)
+    if track.user_id == current_user.id || is_driving == True
+        track.delete()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
