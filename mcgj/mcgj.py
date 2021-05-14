@@ -26,6 +26,7 @@ def index():
 
 
 @bp.route("/sessions/<session_id>")
+@login_required
 def render_session(session_id):
     """
     Renders a list of tracks for a given session.
@@ -85,6 +86,7 @@ def render_session(session_id):
     return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
 
 @bp.route("/sessions/<session_id>/drive")
+@login_required
 def driveSession(session_id):
     if 'driving' not in client_session:
         client_session['driving'] = {}
@@ -95,6 +97,7 @@ def driveSession(session_id):
     return redirect(url_for('mcgj.render_session', session_id=session_id))
 
 @bp.route("/sessions/<session_id>/undrive")
+@login_required
 def undriveSession(session_id):
     if 'driving' not in client_session:
         client_session['driving'] = {}
@@ -105,6 +108,7 @@ def undriveSession(session_id):
     return redirect(url_for('mcgj.render_session', session_id=session_id))
 
 @bp.route("/sessions/<session_id>/edit")
+@login_required
 def edit_session(session_id):
     """
     Renders a list of tracks for a given session.
@@ -119,6 +123,7 @@ def edit_session(session_id):
 
 
 @bp.route("/sessions/<session_id>/update", methods=['POST'])
+@login_required
 def update_session(session_id):
     """Submit an update to a track"""
     session = Session(with_id=session_id)
@@ -130,6 +135,7 @@ def update_session(session_id):
 
 
 @bp.route("/sessions/<session_id>/next_round")
+@login_required
 def next_round(session_id):
     """Update current round for session"""
     session = Session(with_id=session_id)
@@ -143,6 +149,7 @@ def next_round(session_id):
 # conditionally pick the code we run based on the method, like
 # https://pythonise.com/series/learning-flask/flask-http-methods
 @bp.route("/tracks/<track_id>/edit")
+@login_required
 def render_edit_track(track_id):
     """Edit a track"""
     track = Track(with_id=track_id)
@@ -150,6 +157,7 @@ def render_edit_track(track_id):
 
 
 @bp.route("/tracks/<track_id>/update", methods=['POST'])
+@login_required
 def update_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
@@ -183,6 +191,7 @@ def update_track(track_id):
 
 
 @bp.route("/tracks/<track_id>/cue")
+@login_required
 def cue_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
@@ -197,6 +206,7 @@ def cue_track(track_id):
 
 
 @bp.route("/tracks/<track_id>/uncue")
+@login_required
 def uncue_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
@@ -208,6 +218,7 @@ def uncue_track(track_id):
 
 # I felt like this should use the DELETE method but… it doesn't work in HTML forms?
 @bp.route("/tracks/<track_id>/delete")
+@login_required
 def delete_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
@@ -217,6 +228,7 @@ def delete_track(track_id):
 
 # TODO: New tracks don't need a round number, they'll get one at the time they are added to the current round
 @bp.route("/new_track")
+@login_required
 # If we are able to pass in params, we can pass them in here for session_id and round_number.
 def render_new_track():
     """Create a new track"""
@@ -228,6 +240,7 @@ def render_new_track():
 
 # TODO: Could probably be "tracks/insert"
 @bp.route("/insert_track", methods=['POST'])
+@login_required
 def insert_track():
     """Insert a new track row"""
     print(request.form)
@@ -265,6 +278,7 @@ def insert_track():
 
 
 @bp.route("/insert_session")
+@login_required
 def insert_session():
     """Create a new session"""
     sess = Session()
