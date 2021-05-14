@@ -30,7 +30,7 @@ def index():
 def profile():
     return render_template("edit_profile.html", user=current_user)
 
-@bp.route("/update_profile")
+@bp.route("/update_profile", methods=['POST'])
 @login_required
 def update_profile():
     user = current_user
