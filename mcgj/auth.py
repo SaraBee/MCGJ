@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from authlib.integrations.flask_client import OAuth
+from authlib.integrations.flask_client import token_update
 from werkzeug.exceptions import HTTPException
 from dotenv import load_dotenv
 import logging
@@ -12,6 +13,22 @@ from .models import User
 load_dotenv()
 
 bp = Blueprint('auth', __name__)
+
+# https://docs.authlib.org/en/latest/client/flask.html#auto-update-token-via-signal
+@token_update.connect_via(current_app)
+def on_token_update(sender, name, token, refresh_token=None, access_token=None):
+    if refresh_token:
+        item = OAuth2Token.find(name=name, refresh_token=refresh_token)
+    elif access_token:
+        item = OAuth2Token.find(name=name, access_token=access_token)
+    else:
+        return
+
+    # update old token
+    item.access_token = token['access_token']
+    item.refresh_token = token.get('refresh_token')
+    item.expires_at = token['expires_at']
+    item.save()
 
 rc = OAuth(current_app).register(
     'Recurse Center',
