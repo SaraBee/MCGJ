@@ -25,6 +25,19 @@ def index():
         return render_template("login.html")
 
 
+@bp.route("/profile")
+@login_required
+def profile():
+    return render_template("edit_profile.html", user=current_user)
+
+@bp.route("/update_profile")
+@login_required
+def update_profile():
+    user = current_user
+    user.nickname = request.form["nickname"] if request.form["nickname"] != "" else None
+    user.update()
+    return redirect(url_for('mcgj.profile'))
+
 @bp.route("/sessions/<session_id>")
 @login_required
 def render_session(session_id):
