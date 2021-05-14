@@ -205,7 +205,7 @@ def update_track(track_id):
 
     is_driving = False
     if 'driving' in client_session:
-        is_driving = client_session['driving'].get(track.session_id)
+        is_driving = client_session['driving'][str(track.session_id)]
     if track.user_id == current_user.id or is_driving == True:
         track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
@@ -246,7 +246,7 @@ def delete_track(track_id):
     track = Track(with_id=track_id)
     is_driving = False
     if 'driving' in client_session:
-        is_driving = client_session['driving'].get(track.session_id)
+        is_driving = client_session['driving'][str(track.session_id)]
     if track.user_id == current_user.id or is_driving == True:
         track.delete()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
