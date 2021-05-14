@@ -166,6 +166,11 @@ def next_round(session_id):
 def render_edit_track(track_id):
     """Edit a track"""
     track = Track(with_id=track_id)
+    user = User(with_id=track.user_id)
+    if not user.nickname:
+        track.person = user.name
+    else:
+        track.person = user.nickname
     return render_template("edit_track.html", track=track)
 
 
