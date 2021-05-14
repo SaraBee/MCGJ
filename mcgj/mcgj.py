@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask import session as client_session
+from flask_login import current_user
 import datetime
 from . import db
 from .models import Session, Track
@@ -209,6 +210,7 @@ def insert_track():
     """Insert a new track row"""
     print(request.form)
     track = Track(request.form)
+    track.user_id = current_user.id
     # track.session_id = request.form["session_id"]
     # track.person = request.form["person"]
     # track.title = request.form["title"]
