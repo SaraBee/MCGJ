@@ -3,7 +3,7 @@ from flask import session as client_session
 from flask_login import current_user, login_required
 import datetime
 from . import db
-from .models import Session, Track
+from .models import Session, Track, User
 from . import services
 
 # Given a session number, fetch all tracks, and pass an array to the template.
