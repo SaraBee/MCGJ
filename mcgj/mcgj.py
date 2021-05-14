@@ -174,7 +174,6 @@ def render_edit_track(track_id):
 def update_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
-    track.user_id = current_user.id
     track.title = request.form["title"] if request.form["title"] != "" else None
     track.artist = request.form["artist"] if request.form["artist"] != "" else None
     track.url = request.form["url"] if request.form["url"] != "" else None
@@ -199,7 +198,11 @@ def update_track(track_id):
     else:
         track.art_url = sc.getNonSpotifyArtwork(track)
 
-    track.update()
+    is_driving = False
+    if 'driving' in client_session:
+        is_driving = client_session['driving'].get(track.session_id)
+    if track.user_id == current_user.id || is_driving == True:
+        track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
@@ -215,11 +218,7 @@ def cue_track(track_id):
     track.played = 1
     track.cue_date = datetime.datetime.now()
 
-    is_driving = False
-    if 'driving' in client_session:
-        is_driving = client_session['driving'].get(track.session_id)
-    if track.user_id == current_user.id || is_driving == True
-        track.update()
+    track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
 
@@ -243,7 +242,7 @@ def delete_track(track_id):
     is_driving = False
     if 'driving' in client_session:
         is_driving = client_session['driving'].get(track.session_id)
-    if track.user_id == current_user.id || is_driving == True
+    if track.user_id == current_user.id or is_driving == True:
         track.delete()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
