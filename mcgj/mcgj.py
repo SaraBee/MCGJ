@@ -14,11 +14,15 @@ bp = Blueprint("mcgj", __name__, template_folder="templates")
 
 @bp.route("/")
 def index():
-    """Show rounds and tracks for the session"""
-    sessions_query = "SELECT * FROM sessions"
-    rows = db.query(sql=sessions_query)
-    sessions = [Session(row) for row in rows]
-    return render_template("session_list.html", sessions=sessions)
+    if current_user.is_authenticated:
+        # Show list of past sessions
+        sessions_query = "SELECT * FROM sessions"
+        rows = db.query(sql=sessions_query)
+        sessions = [Session(row) for row in rows]
+        return render_template("session_list.html", sessions=sessions)
+    else:
+        # Log in page
+        return render_template("login.html")
 
 
 @bp.route("/sessions/<session_id>")
