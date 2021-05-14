@@ -201,7 +201,7 @@ def update_track(track_id):
     is_driving = False
     if 'driving' in client_session:
         is_driving = client_session['driving'].get(track.session_id)
-    if track.user_id == current_user.id || is_driving == True:
+    if track.user_id == current_user.id or is_driving == True:
         track.update()
     return redirect(url_for('mcgj.render_session', session_id=track.session_id))
 
