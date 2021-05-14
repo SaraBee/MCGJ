@@ -58,9 +58,17 @@ def render_session(session_id):
     round_users = [track.user_id for track in played_tracks[session.current_round]]
     # unique list of folks who haven't gone yet this round
     next_up_ids = {track.user_id for track in unplayed_tracks if track.user_id not in round_users}
-    next_up_query = f"SELECT nickname FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
 
-    next_up = db.query(sql=next_up_query, args=next_up_ids)
+    # sorry
+    next_up_query = f"SELECT nickname, name FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
+    next_up_rows = db.query(sql=next_up_query, args=list(next_up_ids))
+
+    next_up = []
+    for person in next_up_rows:
+        if not person['nickname']:
+            next_up.append(person['name'])
+        else:
+            next_up.append(person['nickname'])
 
     return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
 
