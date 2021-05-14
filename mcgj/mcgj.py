@@ -42,7 +42,18 @@ def render_session(session_id):
         print(track.__dict__)
 
     unplayed_tracks = []
-    unplayed_tracks = [track for track in tracks if track.played != 1]
+    for track in tracks:
+        if track.played != 1:
+            if track.user_id:
+                user_query = "SELECT nickname, name FROM users WHERE id = ?"
+                user_rows = db.query(sql=user_query, args=[track.user_id])
+                # temporarily set person field to canonical user info
+                for user_row in user_rows:
+                    if not user_row['nickname']:
+                        track.person = user_row['name']
+                    else:
+                        track.person = user_row['nickname']
+            unplayed_tracks.append(track)
 
     played_tracks = {}
     for round_num in range(1, session.current_round + 1):
