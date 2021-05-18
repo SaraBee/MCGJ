@@ -38,7 +38,13 @@ def logout():
     return redirect(url_for('mcgj.index'))
 
 @bp.route('/auth/recurse')
-def auth_recurse_redirect(session_id=None):
+def auth_recurse_redirect():
+    # Redirect to the Recurse Center OAuth2 endpoint
+    callback = os.getenv('CLIENT_CALLBACK')
+    return rc.authorize_redirect(callback)
+
+@bp.route('/sessions/<session_id>/auth/recurse')
+def session_auth_recurse_redirect(session_id):
     direct_link_session = session_id
     # Redirect to the Recurse Center OAuth2 endpoint
     callback = os.getenv('CLIENT_CALLBACK')

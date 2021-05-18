@@ -96,7 +96,7 @@ def render_session(session_id):
         return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
 
     else:
-        return redirect(url_for('auth.auth_recurse_redirect', session_id=session_id))
+        return redirect(url_for('auth.session_auth_recurse_redirect', session_id=session_id))
 
 @bp.route("/sessions/<session_id>/drive")
 @login_required
