@@ -22,6 +22,8 @@ rc = OAuth(current_app).register(
     client_secret=os.getenv('CLIENT_SECRET'),
 )
 
+direct_link_session = None
+
 @bp.route('/login_test')
 def login():
     if current_user.is_authenticated:
@@ -36,15 +38,15 @@ def logout():
     return redirect(url_for('mcgj.index'))
 
 @bp.route('/auth/recurse')
-def auth_recurse_redirect():
-    "Redirect to the Recurse Center OAuth2 endpoint"
+def auth_recurse_redirect(session_id=None):
+    direct_link_session = session_id
+    # Redirect to the Recurse Center OAuth2 endpoint
     callback = os.getenv('CLIENT_CALLBACK')
     return rc.authorize_redirect(callback)
 
 @bp.route('/auth/callback', methods=['GET', 'POST'])
 def auth_recurse_callback():
-    "Process the results of a successful OAuth2 authentication"
-
+    # Process the results of a successful OAuth2 authentication"
     try:
         token = rc.authorize_access_token()
     except HTTPException:
@@ -73,8 +75,10 @@ def auth_recurse_callback():
         user.update()
     login_user(user)
     logging.info("Logged in: %s", rc_user.get('name', ''))
-
-    return redirect(url_for('mcgj.index'))
+    if direct_link_session != None:
+        return redirect(url_for('mcgj.render_session', session_id=direct_link_session))
+    else:
+        return redirect(url_for('mcgj.index'))
 
 def get_rc_profile():
     "Return the RC API information for the currently logged in user"

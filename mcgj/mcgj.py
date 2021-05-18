@@ -39,64 +39,64 @@ def update_profile():
     return redirect(url_for('mcgj.profile'))
 
 @bp.route("/sessions/<session_id>")
-@login_required
 def render_session(session_id):
-    """
-    Renders a list of tracks for a given session.
+    if current_user.is_authenticated:
+        """
+        Renders a list of tracks for a given session.
 
-    First, we fetch the tracks for this session from the database. We them pass them to the Jinja template for this view in the following objects:
-    - unplayed: A list of all unplayed tracks for this session.
-    - played: A dictionary with a key-value pair for each round. The keys are the round numbers, and the values are lists of the tracks, ordered by their cue dates.
-    """
-    print(session_id)
-    session = Session(with_id=session_id)
+        First, we fetch the tracks for this session from the database. We them pass them to the Jinja template for this view in the following objects:
+        - unplayed: A list of all unplayed tracks for this session.
+        - played: A dictionary with a key-value pair for each round. The keys are the round numbers, and the values are lists of the tracks, ordered by their cue dates.
+        """
+        session = Session(with_id=session_id)
 
-    rows_query = "SELECT * FROM tracks WHERE session_id = ?"
-    rows = db.query(sql=rows_query, args=[session_id])
+        rows_query = "SELECT * FROM tracks WHERE session_id = ?"
+        rows = db.query(sql=rows_query, args=[session_id])
 
-    tracks = [Track(row) for row in rows]
+        tracks = [Track(row) for row in rows]
 
-    for track in tracks:
-        if track.user_id:
-            user_query = "SELECT nickname, name FROM users WHERE id = ?"
-            user_rows = db.query(sql=user_query, args=[track.user_id])
-            # temporarily set person field to canonical user info
-            for user_row in user_rows:
-                if not user_row['nickname']:
-                    track.person = user_row['name']
-                else:
-                    track.person = user_row['nickname']
-        print(track.__dict__)
+        for track in tracks:
+            if track.user_id:
+                user_query = "SELECT nickname, name FROM users WHERE id = ?"
+                user_rows = db.query(sql=user_query, args=[track.user_id])
+                # temporarily set person field to canonical user info
+                for user_row in user_rows:
+                    if not user_row['nickname']:
+                        track.person = user_row['name']
+                    else:
+                        track.person = user_row['nickname']
 
-    unplayed_tracks = [track for track in tracks if track.played != 1]
+        unplayed_tracks = [track for track in tracks if track.played != 1]
 
-    played_tracks = {}
-    for round_num in range(1, session.current_round + 1):
-        round_tracks = [track for track in tracks if track.round_number == round_num]
-        played_tracks[round_num] = sorted([track for track in round_tracks if track.played == 1], key=lambda track: track.cue_date)
-    print(played_tracks)
+        played_tracks = {}
+        for round_num in range(1, session.current_round + 1):
+            round_tracks = [track for track in tracks if track.round_number == round_num]
+            played_tracks[round_num] = sorted([track for track in round_tracks if track.played == 1], key=lambda track: track.cue_date)
 
-    is_driving = False
-    if 'driving' in client_session:
-        is_driving = client_session['driving'].get(session_id)
+        is_driving = False
+        if 'driving' in client_session:
+            is_driving = client_session['driving'].get(session_id)
 
-    # folks who have already gone this round
-    round_users = [track.user_id for track in played_tracks[session.current_round]]
-    # unique list of folks who haven't gone yet this round
-    next_up_ids = {track.user_id for track in unplayed_tracks if track.user_id not in round_users}
+        # folks who have already gone this round
+        round_users = [track.user_id for track in played_tracks[session.current_round]]
+        # unique list of folks who haven't gone yet this round
+        next_up_ids = {track.user_id for track in unplayed_tracks if track.user_id not in round_users}
 
-    # sorry
-    next_up_query = f"SELECT nickname, name FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
-    next_up_rows = db.query(sql=next_up_query, args=list(next_up_ids))
+        # sorry
+        next_up_query = f"SELECT nickname, name FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
+        next_up_rows = db.query(sql=next_up_query, args=list(next_up_ids))
 
-    next_up = []
-    for person in next_up_rows:
-        if not person['nickname']:
-            next_up.append(person['name'])
-        else:
-            next_up.append(person['nickname'])
+        next_up = []
+        for person in next_up_rows:
+            if not person['nickname']:
+                next_up.append(person['name'])
+            else:
+                next_up.append(person['nickname'])
 
-    return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
+        return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
+
+    else:
+        return redirect(url_for('auth.auth_recurse_redirect'), session_id=session_id)
 
 @bp.route("/sessions/<session_id>/drive")
 @login_required
