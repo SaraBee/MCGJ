@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from authlib.integrations.flask_client import OAuth
 from werkzeug.exceptions import HTTPException
@@ -22,8 +22,6 @@ rc = OAuth(current_app).register(
     client_secret=os.getenv('CLIENT_SECRET'),
 )
 
-direct_link_session = None
-
 @bp.route('/login_test')
 def login():
     if current_user.is_authenticated:
@@ -45,7 +43,7 @@ def auth_recurse_redirect():
 
 @bp.route('/sessions/<session_id>/auth/recurse')
 def session_auth_recurse_redirect(session_id):
-    direct_link_session = session_id
+    session['auth_session'] = session_id
     # Redirect to the Recurse Center OAuth2 endpoint
     callback = os.getenv('CLIENT_CALLBACK')
     return rc.authorize_redirect(callback)
@@ -81,8 +79,8 @@ def auth_recurse_callback():
         user.update()
     login_user(user)
     logging.info("Logged in: %s", rc_user.get('name', ''))
-    if direct_link_session != None:
-        return redirect(url_for('mcgj.render_session', session_id=direct_link_session))
+    if 'auth_session' in session:
+        return redirect(url_for('mcgj.render_session', session_id=session['auth_session']))
     else:
         return redirect(url_for('mcgj.index'))
 
