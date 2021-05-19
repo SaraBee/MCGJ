@@ -204,7 +204,7 @@ def update_track(track_id):
         track.art_url = sc.getNonSpotifyArtwork(track)
 
     is_driving = False
-    if 'driving' in client_session:
+    if 'driving' in client_session and str(track.sesssion_id) in client_session['driving']:
         is_driving = client_session['driving'][str(track.session_id)]
     if track.user_id == current_user.id or is_driving == True:
         track.update()
@@ -245,7 +245,7 @@ def delete_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     is_driving = False
-    if 'driving' in client_session:
+    if 'driving' in client_session and str(track.session_id) in client_session['driving']:
         is_driving = client_session['driving'][str(track.session_id)]
     if track.user_id == current_user.id or is_driving == True:
         track.delete()
