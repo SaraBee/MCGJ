@@ -98,7 +98,7 @@ def render_session(session_id):
     else:
         return redirect(url_for('auth.session_auth_recurse_redirect', session_id=session_id))
 
-@bp.route("sessions/latest")
+@bp.route("/sessions/latest")
 def renderLatestSession():
     session_query = "SELECT * FROM sessions ORDER BY create_date DESC limit 1"
     session_rows = db.query(sql=session_query)
