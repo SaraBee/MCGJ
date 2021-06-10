@@ -67,6 +67,7 @@ venv/
 
 # Databases
 *.db
+*.db.bak
 
 # Config
 */config.py
