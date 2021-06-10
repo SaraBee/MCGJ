@@ -1,7 +1,12 @@
 # MCGJ
 ![Deploy](https://github.com/SaraBee/MCGJ/workflows/Deploy/badge.svg)
 
-## Setting up MCGJ on PythonAnywhere
+## Setting up MCGJ
+
+### Using PythonAnywhere
+
+[PythonAnywhere](https://www.pythonanywhere.com/) will let you quickly set up a
+Python server with no local development environment required!
 
 - Create a new web app with Python 3.8 and manual configuration (don't set up a fresh Flask app)
 - In a console for your app, clone this repo
@@ -21,6 +26,31 @@ application = create_app()
 - Hit the reload button in the Web tab
 
 That should be it? Check your error log if you run into trouble.
+
+### Locally
+
+First ensure you have `python3`, `pip`, and `virtualenv` already installed.
+
+1. Create a new python3 virtual environment, source it, and install the
+   requirements using pip:
+   ```sh
+    virtualenv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+   ```
+2. As in the instructions for PythonAnywhere, set up Spotipy and an mcgj.db
+3. Use `flask run` from the main directory to run the server
+
+### OAuth with RC
+
+Using RC OAuth will require that you have a Recurse Center account. Go to the
+[Recurse Center App Settings](https://www.recurse.com/settings/apps) and create
+a new OAuth app. You can name it whatever you want (e.g. "MCGJ dev local"); the
+Redirect URI should be `/auth/callback` off of wherever the server is hosted
+(e.g. `http://127.0.0.1:5000/auth/callback`).
+
+Inside your environment variables, export the `CLIENT_ID` and `CLIENT_SECRET`
+values you get from the RC page when you create the app.
 
 ## Using MCGJ
 MCGJ is an app for running collaborative listening sessions. The session's driver will manage the tracks in MCGJ and also share their audio to the group over Zoom. Each person participating can queue up as many tracks as they'd like, but the driver makes sure everyone gets one turn per round. Once everyone has gone, start a new round and keep going until everyone gets sleepy and wants to go to bed.
