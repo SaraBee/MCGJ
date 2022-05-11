@@ -94,6 +94,10 @@ class Track(SQLite3BackedObject):
         else:
             return "http://" + url
 
+    def session_url(self):
+        id = self.session_id
+        return "https://mcg.recurse.com/sessions/{}".format(id)
+
 
 class Session(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
