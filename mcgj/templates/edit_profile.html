@@ -13,7 +13,7 @@
 <div class="dash">
   <div class="unplayed">
     <h2>Previously Played Tracks</h2>
-    <ul class="session-list">
+    <ul class="track-list">
       {% if tracks|length > 0 %}
       {% for track in tracks %}
       <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "played_user_track_row.html" %} {% endwith %}</li>
