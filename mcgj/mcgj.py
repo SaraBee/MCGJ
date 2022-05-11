@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, send_file, current_app
 from flask import session as client_session
 from flask_login import current_user, login_required
 import datetime
@@ -37,6 +37,13 @@ def profile():
         track.cue_date = d
 
     return render_template("edit_profile.html", user=current_user, tracks=user_tracks)
+
+@bp.route("/latest_db", methods=['GET'])
+@login_required
+def latest_db():
+    path = current_app.config['DATABASE']
+    return send_file(path, as_attachment=True, attachment_filename='mcgj-latest.db')
+
 
 @bp.route("/update_profile", methods=['POST'])
 @login_required
