@@ -9,4 +9,20 @@
     <input class="action-btn" type="submit" value="Save">
 </form>
 <form method="GET" action="/logout"><input class="action-btn" type="submit" value="Log Out"></form>
+
+<div class="dash">
+  <div class="unplayed">
+    <h2>Previously Played Tracks</h2>
+    <ul class="track-list">
+      {% if tracks|length > 0 %}
+      {% for track in tracks %}
+      <li class="{{loop.cycle('odd', 'even')}}">{% with track=track %} {% include "played_user_track_row.html" %} {% endwith %}</li>
+      {% endfor %}
+      {% else %}
+      <li class="odd">No previously played tracks</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
 {% endblock %}

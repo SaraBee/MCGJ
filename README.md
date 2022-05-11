@@ -1,6 +1,10 @@
 # MCGJ
 ![Deploy](https://github.com/SaraBee/MCGJ/workflows/Deploy/badge.svg)
 
+# Development
+
+There are at least a couple ways to run MCGJ in development, though all of them require you to have access to the digital resources of the Recurse Center.
+
 ## Setting up MCGJ on PythonAnywhere
 
 - Create a new web app with Python 3.8 and manual configuration (don't set up a fresh Flask app)
@@ -21,6 +25,39 @@ application = create_app()
 - Hit the reload button in the Web tab
 
 That should be it? Check your error log if you run into trouble.
+
+## Setting up MCGJ for local dev
+
+As an alternate to running a dev env on PythonAnywhere, you can run it locally with the following
+commands:
+
+- Create a virtualenv in the top-level directory of the mcgj repo: `python3 -m venv venv`
+- Activate the virtualenv and install the requirements: `source venv/bin/activate && pip install -r requirements.txt`
+- Create a `.env` file at the top-level directory of the mcgj repo with the following contents:
+
+``` text
+SPOTIPY_REDIRECT_URI=http://127.0.0.1:5000/
+SPOTIPY_CLIENT_ID=REDACTED
+SPOTIPY_CLIENT_SECRET=REDACTED
+
+# oauth vars from the Recurse Center
+CLIENT_ID=REDACTED
+CLIENT_SECRET=REDACTED
+CLIENT_CALLBACK=http://127.0.0.1:5000/auth/callback
+
+# enable hot reload of the flask app and in-browser debugger
+FLASK_ENV=development
+FLASK_APP=mcgj
+```
+
+Replace `REDACTED` with appropriate real values; don't check this file in (it's already gitignored).
+
+- Add a copy of the mcgj DB to the top-level directory of the repo, and call it `dev.db`.
+- Run `python -m flask run` at the top-level directory of the repo; MCGJ should now be running!
+
+You should be able to browse to http://127.0.0.1:5000/ and login with your RC creds, just like the
+prod MCGJ.
+
 
 ## Using MCGJ
 MCGJ is an app for running collaborative listening sessions. The session's driver will manage the tracks in MCGJ and also share their audio to the group over Zoom. Each person participating can queue up as many tracks as they'd like, but the driver makes sure everyone gets one turn per round. Once everyone has gone, start a new round and keep going until everyone gets sleepy and wants to go to bed.
