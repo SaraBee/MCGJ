@@ -28,7 +28,7 @@ def index():
 @bp.route("/profile")
 @login_required
 def profile():
-    user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? ORDER BY cue_date DESC LIMIT 50"
+    user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? AND cue_date IS NOT NULL ORDER BY cue_date DESC LIMIT 50"
     user_tracks = db.query(sql=user_tracks_query, args=[current_user.id])
     user_tracks = [Track(row) for row in user_tracks]
 
