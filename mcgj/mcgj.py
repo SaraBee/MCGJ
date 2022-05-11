@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, send_file, url_for
 from flask import session as client_session
 from flask_login import current_user, login_required
 import datetime
@@ -6,6 +6,8 @@ from itertools import chain, zip_longest
 from . import db
 from .models import Session, Track, User
 from . import services
+
+import sqlite3, tempfile
 
 # Given a session number, fetch all tracks, and pass an array to the template.
 
@@ -77,6 +79,18 @@ def profile():
         track.cue_date = d
 
     return render_template("edit_profile.html", user=current_user, tracks=user_tracks)
+
+@bp.route("/latest_db", methods=['GET'])
+@login_required
+def latest_db():
+    path = tempfile.NamedTemporaryFile(suffix='.db')
+    tmp = sqlite3.connect(path.name)
+    cur = db.connect()
+    cur.backup(tmp)
+    tmp.close()
+    cur.close()
+    return send_file(path, as_attachment=True, attachment_filename='mcgj-latest.db')
+
 
 @bp.route("/update_profile", methods=['POST'])
 @login_required
