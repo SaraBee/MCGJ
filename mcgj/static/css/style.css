@@ -42,6 +42,11 @@ ul {
         margin: 0;
 }
 
+ul.leader-list {
+        padding: 2px 5px 3px;
+        width: 600px;
+}
+
 ul.session-list { width: 250px; }
 
 ul.session-list > li {
