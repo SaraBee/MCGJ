@@ -11,11 +11,11 @@
 <ul class="leader-list">
     {% for leader in leaders|sort(attribute = 'count', reverse = True) %}
     {% if lb_type == "Tracks" %}
-    <li class="{{loop.cycle('odd', 'even')}}">{{leader.artist}} - {{leader.title}} | {{leader.count}}</li>
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.count}} | {{leader.artist}} - {{leader.title}}</li>
     {% elif lb_type == "Artists" %}
-    <li class="{{loop.cycle('odd', 'even')}}">{{leader.artist}} | {{leader.count}}</li>
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.count}} | {{leader.artist}}</li>
     {% elif lb_type == "Users" %}
-    <li class="{{loop.cycle('odd', 'even')}}">{{leader.name}} | {{leader.count}}</li>
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.count}} | {{leader.name}}</li>
     {% endif %}
 {% endfor %}
 </ul>
