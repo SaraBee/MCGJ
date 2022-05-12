@@ -42,7 +42,7 @@ ul {
         margin: 0;
 }
 
-ul.leader-list {
+ul.leader-list > li {
         padding: 2px 5px 3px;
         width: 600px;
 }
