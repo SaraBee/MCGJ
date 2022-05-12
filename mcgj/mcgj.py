@@ -24,6 +24,45 @@ def index():
         # Log in page
         return render_template("login.html")
 
+@bp.route("/sessions")
+@login_required
+def sessions():
+    # Show list of past sessions
+    sessions_query = "SELECT * FROM sessions"
+    rows = db.query(sql=sessions_query)
+    sessions = [Session(row) for row in rows]
+    return render_template("session_list.html", sessions=sessions)
+
+@bp.route("/top_artists")
+@login_required
+def top_artists():
+    # Artist leaderboard
+    artist_lb_query = 'SELECT artist, COUNT(*) as count FROM tracks WHERE artist !="" GROUP BY artist ORDER BY count DESC LIMIT 50;'
+    top_artists = db.query(sql=artist_lb_query)
+    return render_template("leaderboard.html", lb_type="Artists", leaders=top_artists)
+
+@bp.route("/top_tracks")
+@login_required
+def top_tracks():
+    # Track leaderboard
+    track_lb_query = 'SELECT title, artist, COUNT(*) as count FROM tracks WHERE title !="" GROUP BY title, artist ORDER BY count DESC LIMIT 20;'
+    top_tracks = db.query(sql=track_lb_query)
+    return render_template("leaderboard.html", lb_type="Tracks", leaders=top_tracks)
+
+@bp.route("/top_users")
+@login_required
+def top_users():
+    # Contributor leaderboard
+    user_lb_query = 'SELECT users.nickname, users.name, COUNT(*) as count FROM tracks JOIN users ON tracks.user_id = users.id WHERE tracks.user_id != "" GROUP BY tracks.user_id ORDER BY count DESC LIMIT 20;'
+    rows = db.query(sql=user_lb_query)
+
+    top_users = []
+    for user in rows:
+        if not user['nickname']:
+            top_users.append({'name': user['name'], 'count': user['count']})
+        else:
+            top_users.append({'name': user['nickname'], 'count': user['count']})
+    return render_template("leaderboard.html", lb_type="Users", leaders=top_users)
 
 @bp.route("/profile")
 @login_required

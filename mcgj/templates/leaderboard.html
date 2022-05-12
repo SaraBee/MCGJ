@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}MCGJ{% endblock %}
+
+{% block content %}
+<h1>Music Consumption Group... Jockey</h1>
+
+<a class="nav" href="/">Home</a> | <a class="nav" href="/sessions">Session Archive</a> | <a class="nav" href="/top_artists">Top Artists</a> | <a class="nav" href="/top_tracks">Top Tracks</a> | <a class="nav" href="/top_users">
+
+<h2>{{lb_type}} Leaderboard</h2>
+
+<ul class="leader-list">
+    {% for leader in leaders|sort(attribute = 'count', reverse = True) %}
+    {% if lb_type == "Tracks" %}
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.artist}} - {{leader.title}} | {{leader.count}}</li>
+    {% elif lb_type == "Artists" %}
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.artist}} | {{leader.count}}</li>
+    {% elif lb_type == "Users" %}
+    <li class="{{loop.cycle('odd', 'even')}}">{{leader.name}} | {{leader.count}}</li>
+    {% endif %}
+{% endfor %}
+</ul>
+{% endblock %}
