@@ -125,7 +125,8 @@ def render_session(session_id):
             is_driving = client_session['driving'].get(session_id)
 
         round_users = [track.user_id for track in played_tracks[session.current_round]]
-        queued_users = list(dict.fromkeys(sorted([track.user_id for track in unplayed_tracks if track.user_id not in round_users], key=lambda track: track.create_date)))
+        queued_users = list(dict.fromkeys([track.user_id for track in unplayed_tracks if track.user_id not in round_users]))
+
         if session.current_round == 1:
             # first round, go in order that tracks were added in the queue
             next_up_ids = queued_users
