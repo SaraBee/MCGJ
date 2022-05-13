@@ -107,6 +107,11 @@ hr {
 }
 .action-btn:hover { background: var(--slate); }
 
+#profile-settings {
+        display: flex;
+        justify-content: space-around;
+}
+
 #nickname-btn {
         float: right;
         margin-top: -32px;
