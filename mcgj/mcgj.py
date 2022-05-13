@@ -56,7 +56,7 @@ def top_tracks():
 @login_required
 def top_users():
     # Contributor leaderboard
-    user_lb_query = 'SELECT users.nickname, users.name, COUNT(*) as count FROM tracks JOIN users ON tracks.user_id = users.id WHERE tracks.user_id != "" GROUP BY tracks.user_id ORDER BY count DESC LIMIT 20;'
+    user_lb_query = 'SELECT users.nickname, users.name, COUNT(*) as count FROM tracks JOIN users ON tracks.user_id = users.id WHERE tracks.user_id != "" AND tracks.cue_date IS NOT NULL GROUP BY tracks.user_id ORDER BY count DESC LIMIT 20;'
     rows = db.query(sql=user_lb_query)
 
     top_users = []
