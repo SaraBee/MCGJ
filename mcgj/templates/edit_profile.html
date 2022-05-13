@@ -4,6 +4,9 @@
 
 {% block content %}
 <h1>Hi {{user.name}}!</h1>
+
+{% include "general_nav.html" %}
+
 <form class="edit-form" method="POST" action="/update_profile">
     <label for="nickname">Nickname</label><input type="text" name="nickname" value="{{user.nickname if user.nickname != None}}" required>
     <input class="action-btn" type="submit" value="Save" id="nickname-btn">
