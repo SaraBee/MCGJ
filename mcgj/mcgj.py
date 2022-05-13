@@ -134,8 +134,8 @@ def render_session(session_id):
         else:
             prev_round_tracks = sorted([track for track in played_tracks[session.current_round - 1]], key=lambda track: track.cue_date)
             prev_round_users = [track.user_id for track in prev_round_tracks]
-            # start with the other from last round, take out anyone who's already gone this round
-            initial_order = [user_id for user_id in prev_round_users if user_id not in round_users]
+            # start with the order from last round, include anyone in the queue who hasn't gone yet this round
+            initial_order = [user_id for user_id in prev_round_users if user_id not in round_users if user_id in queued_users]
             # anyone left over in the queue who wasn't in last round
             newcomers = [user_id for user_id in queued_users if user_id not in initial_order]
             # zipper merge new folks into last round's order
