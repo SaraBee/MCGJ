@@ -72,7 +72,7 @@ def top_users():
 def profile():
     user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? AND cue_date IS NOT NULL ORDER BY cue_date DESC LIMIT 50"
     user_tracks = db.query(sql=user_tracks_query, args=[current_user.id])
-    user_tracks = [Track(row) for row in user_tracks]
+    user_tracks = [Track(row) for row in user_tracks] if user_tracks is not None else []
 
     for track in user_tracks:
         d = track.cue_date.date()

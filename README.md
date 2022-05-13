@@ -72,8 +72,8 @@ Some cool features:
 
 ## Hot Tips for Cool Kids
 
-There's a link to download the live database from the session page
-(https://mcg.recurse.com/sessions/latest). If you download it to your home directory and have a
+There's a link to download the live database from the sessions list page
+(https://mcg.recurse.com/sessions). If you download it to your home directory and have a
 reasonable shell, you can add the following shell function to your rc file to easily query the
 database for tracks by title or artist:
 
