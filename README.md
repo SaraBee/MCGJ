@@ -69,3 +69,32 @@ Some cool features:
 - Track details are automatically completed for tracks when a Spotify or Bandcamp link is used
 - Album art is fetched from Spotify using the track details even for non-Spotify tracks (if the track is also available on Spotify)
 - Driving the session shows/hides some driver controls for adding tracks from Unplayed to the rounds and is also saved in the session cookie
+
+## Hot Tips for Cool Kids
+
+There's a link to download the live database from the sessions list page
+(https://mcg.recurse.com/sessions). If you download it to your home directory and have a
+reasonable shell, you can add the following shell function to your rc file to easily query the
+database for tracks by title or artist:
+
+``` shell
+mcgq () {
+	_arg="$(echo $@)"
+	sqlite3 ~/mcgj-latest.db "SELECT t.title, t.artist, t.cue_date, users.name
+FROM tracks t
+INNER JOIN users ON users.id = t.user_id
+WHERE artist LIKE \"%$_arg%\" OR title LIKE \"%$_arg%\";"
+}
+```
+
+Then you can use it like:
+
+``` text
+$ mcgq tori amos
+Space Dog|Tori Amos|2022-01-12 02:43:39.417409|Person A
+Father Lucifer|Tori Amos|2022-01-12 02:21:33.176572|Person B
+God|Tori Amos|2022-04-13 02:31:48.398137|Person C
+
+$ mcgq baltihors
+Baltihorse|Dan Deacon|2022-03-23 02:40:15.538578|Joe
+```

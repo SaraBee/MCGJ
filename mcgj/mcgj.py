@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, send_file, url_for
 from flask import session as client_session
 from flask_login import current_user, login_required
 import datetime
@@ -6,6 +6,8 @@ from itertools import chain, zip_longest
 from . import db
 from .models import Session, Track, User
 from . import services
+
+import sqlite3, tempfile
 
 # Given a session number, fetch all tracks, and pass an array to the template.
 
@@ -70,13 +72,25 @@ def top_users():
 def profile():
     user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? AND cue_date IS NOT NULL ORDER BY cue_date DESC LIMIT 50"
     user_tracks = db.query(sql=user_tracks_query, args=[current_user.id])
-    user_tracks = [Track(row) for row in user_tracks]
+    user_tracks = [Track(row) for row in user_tracks] if user_tracks is not None else []
 
     for track in user_tracks:
         d = track.cue_date.date()
         track.cue_date = d
 
     return render_template("edit_profile.html", user=current_user, tracks=user_tracks)
+
+@bp.route("/latest_db", methods=['GET'])
+@login_required
+def latest_db():
+    path = tempfile.NamedTemporaryFile(suffix='.db')
+    tmp = sqlite3.connect(path.name)
+    cur = db.connect()
+    cur.backup(tmp)
+    tmp.close()
+    cur.close()
+    return send_file(path, as_attachment=True, attachment_filename='mcgj-latest.db')
+
 
 @bp.route("/update_profile", methods=['POST'])
 @login_required
