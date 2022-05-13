@@ -124,10 +124,20 @@ def render_session(session_id):
         if 'driving' in client_session:
             is_driving = client_session['driving'].get(session_id)
 
-        # folks who have already gone this round
         round_users = [track.user_id for track in played_tracks[session.current_round]]
-        # unique list of folks who haven't gone yet this round
-        next_up_ids = {track.user_id for track in unplayed_tracks if track.user_id not in round_users}
+        queued_users = list(dict.fromkeys(sorted([track.user_id for track in unplayed_tracks if not in round_users], key=lambda track: track.create_date)))
+        if session.current_round == 1:
+            # first round, go in order that tracks were added in the queue
+            next_up_ids = queued_users
+        else:
+            prev_round_tracks = sorted([track for track in played_tracks[session.current_round - 1]], key=lambda track: track.cue_date)
+            prev_round_users = [track.user_id for track in prev_round_tracks]
+            # start with the other from last round, take out anyone who's already gone this round
+            initial_order = [user for user in prev_round_users if not in round_users]
+            # anyone left over in the queue who wasn't in last round
+            newcomers = [user for user in queued_users if not in initial_order]
+            # zipper merge new folks into last round's order
+            next_up_ids = [user for user in chain.from_iterable(zip_longest(initial_order, newcomers)) if user is not None]
 
         # sorry
         next_up_query = f"SELECT nickname, name FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
