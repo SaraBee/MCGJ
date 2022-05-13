@@ -6,7 +6,7 @@
 <h1>Hi {{user.name}}!</h1>
 <form class="edit-form" method="POST" action="/update_profile">
     <label for="nickname">Nickname</label><input type="text" name="nickname" value="{{user.nickname if user.nickname != None}}" required>
-    <input class="action-btn" type="submit" value="Save">
+    <input class="action-btn" type="submit" value="Save" id="nickname-btn">
 </form>
 <form method="GET" action="/logout"><input class="action-btn" type="submit" value="Log Out"></form>
 

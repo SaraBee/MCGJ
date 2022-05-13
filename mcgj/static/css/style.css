@@ -106,6 +106,13 @@ hr {
         cursor: pointer;
 }
 .action-btn:hover { background: var(--slate); }
+
+#nickname-btn {
+        float: right;
+        margin-top: -32px;
+        display: block;
+}
+
 .button-grp { width: 100%; margin: 16px 0 0 0; }
 .button-grp > form { display: inline-block;}
 
