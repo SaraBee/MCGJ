@@ -98,13 +98,13 @@ def render_session(session_id):
         session = Session(with_id=session_id)
 
         rows_query = "SELECT * FROM tracks WHERE session_id = ?"
+        user_query = "SELECT nickname, name FROM users WHERE id = ?"
         rows = db.query(sql=rows_query, args=[session_id])
 
         tracks = [Track(row) for row in rows]
 
         for track in tracks:
             if track.user_id:
-                user_query = "SELECT nickname, name FROM users WHERE id = ?"
                 user_rows = db.query(sql=user_query, args=[track.user_id])
                 # temporarily set person field to canonical user info
                 for user_row in user_rows:
@@ -140,16 +140,14 @@ def render_session(session_id):
             # zipper merge new folks into last round's order
             next_up_ids = [user_id for user_id in chain.from_iterable(zip_longest(initial_order, newcomers)) if user_id is not None]
 
-        # sorry
-        next_up_query = f"SELECT nickname, name FROM users WHERE id IN({','.join(['?']*len(next_up_ids))})"
-        next_up_rows = db.query(sql=next_up_query, args=list(next_up_ids))
-
         next_up = []
-        for person in next_up_rows:
-            if not person['nickname']:
-                next_up.append(person['name'])
-            else:
-                next_up.append(person['nickname'])
+        for user_id in next_up_ids:
+            user_rows = db.query(sql=user_query, args=[user_id])
+            for user_row in user_rows:
+                if not user_row['nickname']:
+                    next_up.append(user_row['name'])
+                else:
+                    next_up.append(user_row['nickname'])
 
         return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
 
