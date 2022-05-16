@@ -82,7 +82,7 @@ mcgq () {
 	_arg="$(echo $@)"
 	sqlite3 ~/mcgj-latest.db "SELECT t.title, t.artist, t.cue_date, users.name
 FROM tracks t
-INNER JOIN users ON users.id = t.user_id
+LEFT JOIN users ON users.id = t.user_id
 WHERE artist LIKE \"%$_arg%\" OR title LIKE \"%$_arg%\";"
 }
 ```
