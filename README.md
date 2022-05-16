@@ -1,5 +1,6 @@
 # MCGJ
 ![Deploy](https://github.com/SaraBee/MCGJ/workflows/Deploy/badge.svg)
+![Staging](https://github.com/SaraBee/MCGJ/workflows/Deploy-Staging/badge.svg)
 
 # Development
 
