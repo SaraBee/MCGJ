@@ -7,14 +7,14 @@ class Song extends HTMLElement {
     const el = document.querySelector(
       `album-art.art-link[data-trackid="${id}"]`
     );
-    el.toggleAttribute("highlighted", true);
+    el.toggleAttribute("highlighted");
   };
 
   onmouseenter = () => {
     const el = document.querySelector(
       `album-art.art-link[data-trackid="${id}"]`
     );
-    el.toggleAttribute("highlighted", false);
+    el.toggleAttribute("highlighted");
   };
 
   disconnectedCallback() {
