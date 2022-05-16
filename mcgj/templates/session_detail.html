@@ -64,11 +64,14 @@
         <div class="artwork">
             {% for track in round_tracks %}
             {% if track.art_url %}
-            <a class="art-link" href="{{track.url}}"><img class="album-cover" src="{{track.art_url}}" width="100"/></a>
+            <album-art class="art-link" href="{{track.url}}" data-trackid="{{ track.id }}">
+                <img class="album-cover" src="{{track.art_url}}" width="100"/>
+            </album-art>
             {% endif %}
             {% endfor %}
         </div>
     </div>
 </div>
 {% endfor %}
+
 {% endblock %}

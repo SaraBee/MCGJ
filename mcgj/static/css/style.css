@@ -117,4 +117,4 @@ hr {
 .button-grp > form { display: inline-block;}
 
 .album-cover { opacity: 0.5; }
-.album-cover:hover { opacity: 1; }
+.album-cover:hover, album-art[highlighted=""] img { opacity: 1; }
