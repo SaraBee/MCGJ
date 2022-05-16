@@ -3,8 +3,8 @@
         <a class="icon-btn" href="/tracks/{{track.id}}/edit"><i class="ri-pencil-fill"></i></a>
         {{position}}.
     </div>
-    <div class="track-details">
+    <session-song class="track-details" data-trackid="{{track.id}}">
         {{track.person}}: <a href={{track.absolute_url() if track.url != None}} target="_blank">{{track.artist_title()}}</a>
-    </div>
+    </session-song>
 </div>
 
