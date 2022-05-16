@@ -3,19 +3,20 @@ class Song extends HTMLElement {
     super();
   }
 
-  onmouseleave = () => {
+  toggleOpacity = () => {
+    const id = this.getAttribute("data-trackid");
     const el = document.querySelector(
       `album-art.art-link[data-trackid="${id}"]`
     );
     el.toggleAttribute("highlighted");
   };
 
-  onmouseenter = () => {
-    const el = document.querySelector(
-      `album-art.art-link[data-trackid="${id}"]`
-    );
-    el.toggleAttribute("highlighted");
-  };
+  connectedCallback() {
+    if (this.isConnected) {
+      this.addEventListener("mouseenter", this.toggleOpacity);
+      this.addEventListener("mouseleave", this.toggleOpacity);
+    }
+  }
 
   disconnectedCallback() {
     console.log("disconnected");
