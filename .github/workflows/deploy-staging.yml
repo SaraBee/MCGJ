@@ -1,11 +1,11 @@
-name: Deploy
+name: Deploy-Staging
 on:
   push:
     branches:
       - staging
 
 jobs:
-  DeployMCGJ:
+  DeployMCGJStaging:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
