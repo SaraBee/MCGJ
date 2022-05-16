@@ -8,7 +8,7 @@ class Song extends HTMLElement {
     const el = document.querySelector(
       `album-art.art-link[data-trackid="${id}"]`
     );
-    el.toggleAttribute("highlighted");
+    if (el) el.toggleAttribute("highlighted");
   };
 
   connectedCallback() {
