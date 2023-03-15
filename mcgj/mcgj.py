@@ -89,7 +89,7 @@ def latest_db():
     cur.backup(tmp)
     tmp.close()
     cur.close()
-    return send_file(path, as_attachment=True, attachment_filename='mcgj-latest.db')
+    return send_file(path, as_attachment=True, download_name='mcgj-latest.db')
 
 
 @bp.route("/update_profile", methods=['POST'])
