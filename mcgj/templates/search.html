@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}MCGJ{% endblock %}
+
+{% block content %}
+<h1>Music Consumption Group... Jockey</h1>
+
+{% include "general_nav.html" %}
+
+<h2>Search Results</h2>
+
+<ul class="search-results">
+{% for result in results|sort(attribute = 'count', reverse = True) %}
+    <li class="{{loop.cycle('odd', 'even')}}">{{result.cue_date}} | {{result.artist}} - {{result.title}} | {{result.nickname or result.name}} </li>
+{% endfor %}
+</ul>
+{% endblock %}

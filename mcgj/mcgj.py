@@ -48,7 +48,7 @@ def top_artists():
 @login_required
 def top_tracks():
     # Track leaderboard
-    track_lb_query = 'SELECT title, artist, COUNT(*) as count FROM tracks WHERE title !="" AND cue_date IS NOT NULL GROUP BY title, artist ORDER BY count DESC LIMIT 20;'
+    track_lb_query = 'SELECT title, artist, COUNT(*) as count FROM tracks WHERE title !="" AND cue_date IS NOT NULL GROUP BY title, artist ORDER BY count DESC LIMIT 50;'
     top_tracks = db.query(sql=track_lb_query)
     return render_template("leaderboard.html", lb_type="Tracks", leaders=top_tracks)
 
@@ -66,6 +66,14 @@ def top_users():
         else:
             top_users.append({'name': user['nickname'], 'count': user['count']})
     return render_template("leaderboard.html", lb_type="Users", leaders=top_users)
+
+@bp.route("/search")
+@login_required
+def search():
+    # Track leaderboard
+    search_query = 'SELECT t.title, t.artist, t.cue_date, u.name, u.nickname FROM tracks t JOIN users u ON t.user_id = u.id WHERE t.artist LIKE "%%amos%%" OR t.title LIKE "%%maybe%%" AND t.cue_date IS NOT NULL ORDER BY t.cue_date DESC LIMIT 50;'
+    search_results = db.query(sql=search_query)
+    return render_template("search.html", results=search_results)
 
 @bp.route("/profile")
 @login_required
