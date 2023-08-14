@@ -61,18 +61,18 @@ def top_users():
 
     top_users = []
     for user in rows:
-        if not user['nickname']:
-            top_users.append({'name': user['name'], 'count': user['count']})
-        else:
-            top_users.append({'name': user['nickname'], 'count': user['count']})
+        top_users.append({'name': user['nickname'] or user['name'], 'count': user['count']})
     return render_template("leaderboard.html", lb_type="Users", leaders=top_users)
 
-@bp.route("/search")
+@bp.route("/search", methods=['GET'])
 @login_required
 def search():
-    # Track leaderboard
-    search_query = 'SELECT t.title, t.artist, t.cue_date, u.name, u.nickname FROM tracks t JOIN users u ON t.user_id = u.id WHERE t.artist LIKE "%%amos%%" OR t.title LIKE "%%maybe%%" AND t.cue_date IS NOT NULL ORDER BY t.cue_date DESC LIMIT 50;'
-    search_results = db.query(sql=search_query)
+    query = request.args.get("q")
+    search_results = []
+    if query:
+        query_params = {"query": "%" + query + "%"}
+        search_query = 'SELECT t.title, t.artist, t.cue_date, u.name, u.nickname FROM tracks t JOIN users u ON t.user_id = u.id WHERE t.artist LIKE :query OR t.title LIKE :query AND t.cue_date IS NOT NULL ORDER BY t.cue_date DESC LIMIT 50;'
+        search_results = db.query(search_query, query_params)
     return render_template("search.html", results=search_results)
 
 @bp.route("/profile")
