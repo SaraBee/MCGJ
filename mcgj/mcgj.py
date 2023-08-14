@@ -67,7 +67,7 @@ def top_users():
 @bp.route("/search", methods=['GET'])
 @login_required
 def search():
-    query = request.args.get("q")
+    query = request.args.get("query")
     search_results = []
     if query:
         query_params = {"query": "%" + query + "%"}
