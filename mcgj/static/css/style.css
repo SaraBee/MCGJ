@@ -89,6 +89,8 @@ hr {
 .edit-form > label:after { content: ":"; }
 .edit-form > .action-btn { grid-column: 2; justify-self: end; margin: 10px 0;}
 
+.search-form { padding-left: 20px; }
+
 .edit-data { margin: 0 0 16px 0; line-height: 1.5em; }
 .edit-data > ul > li { width: 600px; }
 
