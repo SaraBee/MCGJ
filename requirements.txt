@@ -4,7 +4,7 @@ gunicorn==20.0.4
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.2
-Werkzeug==2.2.3
+Werkzeug==3.0.1
 -e .
 Authlib==0.15.5
 flask-login==0.6.2
