@@ -1,43 +1,33 @@
-import uuid
-from . import db
-from copy import copy
 import datetime
+import logging
+from copy import copy
 from re import match
+
 from flask_login import UserMixin
 
-# This track object should be initialized with a sqlite3.Row.
-# There should be accessors for properties, and setters.
-# There should be a "store()" method which commits the update to the db.
-# In store() there should be some stuff about defaults.
-# You could call get_track() and it will hydrate one for you.
-# Track contains ALL the database logic
+from . import db
+
+# needed in db and auth modules
+RC_OAUTH_PROVIDER = "https://www.recurse.com/oauth/authorize"
 
 
 def scrub(table_name):
-    return ''.join( chr for chr in table_name if chr.isalnum() )
-# scrub('); drop tables --')  # returns 'droptables'
+    return "".join(chr for chr in table_name if chr.isalnum())
 
 
 class SQLite3BackedObject:
     def __init__(self, *args, with_id=None, table, **kwargs):
-        print("Initializing object with ID '{}' from table {}".format(with_id, table))
+        logging.info(f"Initializing object with ID '{with_id}' from table {table}")
         self._table = scrub(table)
         if with_id is not None:
             row = db.query(
-                f"SELECT * FROM {self._table} WHERE id = ?",
-                [with_id],
-                one=True
+                f"SELECT * FROM {self._table} WHERE id = ?", [with_id], one=True
             )
-            # If the row hasn't been created yet, set the id manually
-            if not row:
-                setattr(self, "id", with_id)
-            else:
-                # Add the query row to the *args,
-                # which we treat as dictionaries next.
-                args += (row, )
-        for row in args:
-            for key in row:
-                setattr(self, key, row[key])
+            if row is not None:
+                args += (row,)
+        for arg in args:
+            for key in arg:
+                setattr(self, key, arg[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
@@ -68,9 +58,10 @@ class SQLite3BackedObject:
 
     def delete(self):
         if not hasattr(self, "id"):
-            raise AttributeError("This object does not have an id, so we can't delete it from the database.")
+            raise AttributeError(
+                "This object does not have an id, so we can't delete it from the database."
+            )
         sql = "DELETE FROM {} WHERE id = ?".format(self._table)
-        print(sql)
         db.execute(sql, [str(self.id)])
 
 
@@ -89,7 +80,7 @@ class Track(SQLite3BackedObject):
 
     def absolute_url(self):
         url = self.url
-        if match(r'^[a-zA-Z]+://', url):
+        if match(r"^[a-zA-Z]+://", url):
             return url
         else:
             return "http://" + url
@@ -102,6 +93,7 @@ class Track(SQLite3BackedObject):
 class Session(SQLite3BackedObject):
     def __init__(self, *args, with_id=None, **kwargs):
         super().__init__(*args, with_id=with_id, table="sessions", **kwargs)
+
 
 class User(SQLite3BackedObject, UserMixin):
     def __init__(self, *args, with_id=None, **kwargs):

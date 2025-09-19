@@ -11,7 +11,7 @@
 <form method="GET" action="/insert_session"><input class="action-btn" type="submit" value="New Session"></form>
 
 <ul class="session-list">
-    {% for session in sessions|sort(attribute = 'date', reverse = True) %}
+    {% for session in sessions|sort(attribute = 'create_date', reverse = True) %}
     <li class="{{loop.cycle('odd', 'even')}}"> <a href=/sessions/{{session.id}}>{{session.name}}</a></li>
 {% endfor %}
 </ul>

@@ -1,0 +1,18 @@
+[project]
+name = "mcgj"
+version = "0.10"
+requires-python = ">=3.13"
+dependencies = [
+    "authlib==1.3.1",
+    "beautifulsoup4==4.9.1",
+    "click==8.1.3",
+    "flask==3.1.2",
+    "flask-login>=0.6.3",
+    "gunicorn==20.0.4",
+    "itsdangerous==2.2.0",
+    "jinja2==3.1.3",
+    "markupsafe==2.1.2",
+    "python-dotenv==1.0.0",
+    "requests>=2.25",
+    "spotipy>=2.25.1",
+]
