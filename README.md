@@ -31,8 +31,8 @@ That should be it? Check your error log if you run into trouble.
 As an alternate to running a dev env on PythonAnywhere, you can run it locally with the following
 commands:
 
-- Create a virtualenv in the top-level directory of the mcgj repo: `python3 -m venv venv`
-- Activate the virtualenv and install the requirements: `source venv/bin/activate && pip install -r requirements.txt`
+- [Install `uv`](https://docs.astral.sh/uv/getting-started/installation/)
+- Run `uv sync`
 - Create a `.env` file at the top-level directory of the mcgj repo with the following contents:
 
 ``` text
@@ -53,7 +53,7 @@ FLASK_APP=mcgj
 Replace `REDACTED` with appropriate real values; don't check this file in (it's already gitignored).
 
 - Add a copy of the mcgj DB to the top-level directory of the repo, and call it `dev.db`.
-- Run `python -m flask run` at the top-level directory of the repo; MCGJ should now be running!
+- Run `uv run -m flask run` at the top-level directory of the repo; MCGJ should now be running!
 
 You should be able to browse to http://127.0.0.1:5000/ and login with your RC creds, just like the
 prod MCGJ.

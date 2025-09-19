@@ -1,14 +1,16 @@
 import os
+
 from flask import Flask
 from flask_login import LoginManager
-from . import db, mcgj, auth
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+from . import auth, db, mcgj
 
 
 def create_app(test_config=None):
-    #Create and configure an instance of the Flask application.
-    app = Flask(__name__, instance_relative_config=False, static_url_path='')
-    app.secret_key = 'dev'
+    # Create and configure an instance of the Flask application.
+    app = Flask(__name__, instance_relative_config=False, static_url_path="")
+    app.secret_key = "dev"
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -17,7 +19,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.update(test_config)
 
-    if app.config.get('ENABLE_PROXYFIX'):
+    if app.config.get("ENABLE_PROXYFIX"):
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1, x_proto=1)
 
     # ensure the instance folder exists
@@ -28,6 +30,9 @@ def create_app(test_config=None):
 
     # register the database commands
     db.init_app(app)
+    app.cli.add_command(auth.add_username_password)
+    app.cli.add_command(auth.add_user_command)
+    app.cli.add_command(auth.update_password)
 
     app.register_blueprint(mcgj.bp)
     app.register_blueprint(auth.bp)
@@ -37,6 +42,7 @@ def create_app(test_config=None):
     login_manager.init_app(app)
 
     from .models import User
+
     @login_manager.user_loader
     def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
