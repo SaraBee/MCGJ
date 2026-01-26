@@ -14,10 +14,14 @@ bp = Blueprint("db", __name__)
 def connect():
     connection = getattr(g, "_database", None)
     if connection is None:
-        connection = g._database = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
+        connection = g._database = sqlite3.connect(
+            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
+        )
 
         def make_dicts(cursor, row):
-            return dict((cursor.description[idx][0], value) for idx, value in enumerate(row))
+            return dict(
+                (cursor.description[idx][0], value) for idx, value in enumerate(row)
+            )
 
         connection.row_factory = make_dicts
         # connection.row_factory = sqlite3.Row
@@ -119,7 +123,7 @@ def print_records(table: str) -> str:
     for row in cursor.execute(command):
         results.append(row)
 
-    return(json.dumps(results))
+    return json.dumps(results)
 
 
 def init_app(app):
@@ -130,7 +134,6 @@ def init_app(app):
 
 
 if __name__ == "__main__":
-
     with current_app.app_context():
         result = query("SELECT name FROM sqlite_master WHERE type='table';")
     print(tracks)
