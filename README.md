@@ -52,6 +52,22 @@ FLASK_APP=mcgj
 
 Replace `REDACTED` with appropriate real values; don't check this file in (it's already gitignored).
 
+Create `mcgj/config.py` (from repo root), and populate it with your respective values
+for the following (this file is gitignored):
+
+```python
+DATABASE = "/path/to/repo/MCGJ/dev.db"
+SECRET_KEY = "sekrit-key"
+```
+
+Create a development DB, if you don't have one:
+
+```sh
+uv run flask reset
+```
+
+Then:
+
 - Add a copy of the mcgj DB to the top-level directory of the repo, and call it `dev.db`.
 - Run `uv run -m flask run` at the top-level directory of the repo; MCGJ should now be running!
 
