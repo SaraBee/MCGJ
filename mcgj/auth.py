@@ -128,7 +128,7 @@ def auth_recurse_callback():
 
     # yeah maybe this shouldn't be a one-off query
     user_query = "SELECT * FROM users WHERE id = ?"
-    user_row = db.query(sql=user_query, args=[user.id])
+    user_row = db.query(sql=user_query, args=[id])
     if not user_row:
         user.insert()
         oauth_insert = "INSERT INTO oauth (id, external_id, provider) VALUES (?, ?, ?)"
