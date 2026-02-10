@@ -117,12 +117,12 @@ def auth_recurse_callback():
     rc_user = get_rc_profile()
     rc_id = rc_user.get("id", "")
     id = db.query(
-        "SELECT id FROM oauth WHERE external_id = ? and provider = ? LIMIT 1",
+        "SELECT user_id FROM oauth WHERE external_id = ? and provider = ? LIMIT 1",
         [rc_id, RC_OAUTH_PROVIDER],
         one=True,
     )
 
-    id = int(id["id"]) if id is not None else None
+    id = int(id["user_id"]) if id is not None else None
     user = User(with_id=id)
     user.name = rc_user.get("name", "")
 
@@ -131,7 +131,9 @@ def auth_recurse_callback():
     user_row = db.query(sql=user_query, args=[id])
     if not user_row:
         user.insert()
-        oauth_insert = "INSERT INTO oauth (id, external_id, provider) VALUES (?, ?, ?)"
+        oauth_insert = (
+            "INSERT INTO oauth (user_id, external_id, provider) VALUES (?, ?, ?)"
+        )
         db.execute(
             oauth_insert,
             [user.id, rc_id, RC_OAUTH_PROVIDER],

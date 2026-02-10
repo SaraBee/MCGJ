@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS passwords (
 );
 
 CREATE TABLE IF NOT EXISTS oauth (
-    id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     external_id INTEGER NOT NULL,
     provider TEXT NOT NULL, -- URL for identity provider
     create_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP,
     PRIMARY KEY (external_id, provider),
-    FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

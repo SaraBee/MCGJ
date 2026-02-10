@@ -36,18 +36,6 @@ def close_connection(exception):
         connection.close()
 
 
-def _up_db(connection):
-    updir = pathlib.Path("mcgj/migrations/up")
-    ups = list(updir.glob("*.sql"))
-    ups.sort()
-    for up in ups:
-        up = "/".join(up.parts[1:])
-        with current_app.open_resource(up) as f:
-            connection.cursor().executescript(f.read().decode("utf8"))
-        print(f"ran up migration {up}")
-    return
-
-
 def init_db():
     with current_app.app_context():
         connection = connect()
@@ -64,7 +52,7 @@ def reset_db():
         downs.sort()
         downs.reverse()
         for down in downs:
-            down = "/".join(down.parts[1:])
+            down = pathlib.Path(*down.parts[1:])
             with current_app.open_resource(down) as f:
                 connection.cursor().executescript(f.read().decode("utf8"))
             print(f"ran down migration: {down}")
@@ -74,16 +62,68 @@ def reset_db():
     return
 
 
-def _get_current_data():
+@bp.cli.command("init")
+def init_db_command():
+    """Non-destructively run the up migrations."""
+    db = current_app.config["DATABASE"]
+    init_db()
+    click.echo(f"Initialized the database in {db}.")
+
+
+@bp.cli.command("reset")
+def reset_db_command():
+    """Destroy existing data and re-run the up migrations."""
+    db = current_app.config["DATABASE"]
+    click.echo(
+        f"WARNING: this will remove all data from the existing database in {db}."
+    )
+    _ = input("press enter to continue, or ctrl-c to exit ")
+    click.echo(f"Clearing the database in {db}.")
+    reset_db()
+    click.echo(f"Reset the database in {db}.")
+    return
+
+
+def init_db_test():
     with current_app.app_context():
-        users = query("SELECT * FROM users")
-        sessions = query("SELECT * FROM sessions")
-        tracks = query("SELECT * FROM tracks")
-    return (users, sessions, tracks)
+        connection = connect()
+        with current_app.open_resource("init-db.sql") as f:
+            connection.cursor().executescript(f.read().decode("utf8"))
+        connection.commit()
+
+        sess = Session()
+        sess.name = "Test Session 2020-06-23"
+        sess.date = datetime.date.today()
+        sess.current_round = 1
+        sess.insert()
+
+        track1 = Track()
+        track1.session_id = sess.id
+        track1.round_number = 1
+        track1.person = "Toph Allen"
+        track1.title = "AceMo — Heaven (2020 Mix)"
+        track1.url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
+        track1.insert()
+
+        track2 = Track()
+        track2.session_id = sess.id
+        track2.round_number = 1
+        track2.person = "Sara Bobo"
+        track2.title = "MissDat†Booty†"
+        track2.url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
+        track2.insert()
+
+
+@bp.cli.command("init-test")
+# @with_appcontext
+def init_db_test_command():
+    """DESTROY existing data and create a new table with testing data.."""
+    init_db_test()
+    click.echo("Initialized the database with some dummy data.")
 
 
 @bp.cli.command("migrate-data")
-def migrate_user_data():
+def migrate_user_data_command():
     """REMOVE THIS ONCE THE MIGRATION IS DONE"""
     with current_app.app_context():
         print(
@@ -102,6 +142,26 @@ def migrate_user_data():
     print("Migrated DB to new schema.")
 
     return
+
+
+def _up_db(connection):
+    updir = pathlib.Path("mcgj/migrations/up")
+    ups = list(updir.glob("*.sql"))
+    ups.sort()
+    for up in ups:
+        up = pathlib.Path(*up.parts[1:])
+        with current_app.open_resource(up) as f:
+            connection.cursor().executescript(f.read().decode("utf8"))
+        print(f"ran up migration {up}")
+    return
+
+
+def _get_current_data():
+    with current_app.app_context():
+        users = query("SELECT * FROM users")
+        sessions = query("SELECT * FROM sessions")
+        tracks = query("SELECT * FROM tracks")
+    return (users, sessions, tracks)
 
 
 def _insert_sessions(sessions):
@@ -134,7 +194,7 @@ def _insert_users(users):
         )
         # backfill RC account info
         execute(
-            "INSERT INTO oauth (id, external_id, provider) VALUES (?, ?, ?)",
+            "INSERT INTO oauth (user_id, external_id, provider) VALUES (?, ?, ?)",
             [id, id, RC_OAUTH_PROVIDER],
         )
     return
@@ -184,62 +244,6 @@ def _get_or_none(key, dict):
         return dict[key]
     except:
         return None
-
-
-@bp.cli.command("init")
-def init_db_command():
-    """Non-destructively run the up migrations."""
-    # db = current_app.config["DATABASE"]
-    init_db()
-    click.echo(f"Initialized the database in {db}.")
-
-
-@bp.cli.command("reset")
-def reset_db_command():
-    """Destroy existing data and re-run the up migrations."""
-    db = current_app.config["DATABASE"]
-    click.echo(f"Clearing the database in {db}.")
-    reset_db()
-    click.echo(f"Reset the database in {db}.")
-    return
-
-
-def init_db_test():
-    with current_app.app_context():
-        connection = connect()
-        with current_app.open_resource("init-db.sql") as f:
-            connection.cursor().executescript(f.read().decode("utf8"))
-        connection.commit()
-
-        sess = Session()
-        sess.name = "Test Session 2020-06-23"
-        sess.date = datetime.date.today()
-        sess.current_round = 1
-        sess.insert()
-
-        track1 = Track()
-        track1.session_id = sess.id
-        track1.round_number = 1
-        track1.person = "Toph Allen"
-        track1.title = "AceMo — Heaven (2020 Mix)"
-        track1.url = "https://hausofaltr.bandcamp.com/track/heaven-2020-mix"
-        track1.insert()
-
-        track2 = Track()
-        track2.session_id = sess.id
-        track2.round_number = 1
-        track2.person = "Sara Bobo"
-        track2.title = "MissDat†Booty†"
-        track2.url = "https://open.spotify.com/track/4UJIkpP55qZuq1ecP5luqQ?si=E44FBYM0SXmwAuCM0dZ_wg"
-        track2.insert()
-
-
-@bp.cli.command("init-test")
-# @with_appcontext
-def init_db_test_command():
-    """DESTROY existing data and create a new table with testing data.."""
-    init_db_test()
-    click.echo("Initialized the database with some dummy data.")
 
 
 def query(sql, args=(), one=False):
