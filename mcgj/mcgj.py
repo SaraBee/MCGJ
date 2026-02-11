@@ -95,8 +95,13 @@ def profile():
     user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? AND cue_date IS NOT NULL ORDER BY cue_date DESC LIMIT 50"
     user_tracks = db.query(sql=user_tracks_query, args=[current_user.id])
     user_tracks = [Track(row) for row in user_tracks] if user_tracks is not None else []
-    password = db.query(
-        "SELECT password_hash FROM passwords WHERE id = ?", [current_user.id], one=True
+    has_password = (
+        db.query(
+            "SELECT password_hash FROM passwords WHERE id = ?",
+            [current_user.id],
+            one=True,
+        )
+        is not None
     )
 
     for track in user_tracks:
@@ -104,7 +109,10 @@ def profile():
         track.cue_date = d
 
     return render_template(
-        "edit_profile.html", user=current_user, tracks=user_tracks, password=password
+        "edit_profile.html",
+        user=current_user,
+        tracks=user_tracks,
+        has_password=has_password,
     )
 
 

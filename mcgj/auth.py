@@ -67,7 +67,7 @@ def auth_password():
                 logging.error(
                     f"could not get user with id {id}; this should not be possible"
                 )
-                return redirect(url_for("login_password.html"))
+                return redirect(url_for("mcgj.login_password"))
             user = User(with_id=id)
             user.update()
             login_user(user)
