@@ -70,3 +70,4 @@ venv/
 
 # Config
 */config.py
+.cache

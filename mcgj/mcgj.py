@@ -1,16 +1,17 @@
-from flask import Blueprint, render_template, request, redirect, send_file, url_for
+import datetime
+import sqlite3
+import tempfile
+from itertools import chain, zip_longest
+
+from flask import Blueprint, redirect, render_template, request, send_file, url_for
 from flask import session as client_session
 from flask_login import current_user, login_required
-import datetime
-from itertools import chain, zip_longest
-from . import db
-from .models import Session, Track, User
-from . import services
+from werkzeug.security import check_password_hash, generate_password_hash
 
-import sqlite3, tempfile
+from . import db, services
+from .models import Session, Track, User
 
 # Given a session number, fetch all tracks, and pass an array to the template.
-
 
 bp = Blueprint("mcgj", __name__, template_folder="templates")
 
@@ -27,6 +28,7 @@ def index():
         # Log in page
         return render_template("login.html")
 
+
 @bp.route("/sessions")
 @login_required
 def sessions():
@@ -36,6 +38,7 @@ def sessions():
     sessions = [Session(row) for row in rows]
     return render_template("session_list.html", sessions=sessions)
 
+
 @bp.route("/top_artists")
 @login_required
 def top_artists():
@@ -44,6 +47,7 @@ def top_artists():
     top_artists = db.query(sql=artist_lb_query)
     return render_template("leaderboard.html", lb_type="Artists", leaders=top_artists)
 
+
 @bp.route("/top_tracks")
 @login_required
 def top_tracks():
@@ -51,6 +55,7 @@ def top_tracks():
     track_lb_query = 'SELECT title, artist, COUNT(*) as count FROM tracks WHERE title !="" AND cue_date IS NOT NULL GROUP BY title, artist ORDER BY count DESC LIMIT 50;'
     top_tracks = db.query(sql=track_lb_query)
     return render_template("leaderboard.html", lb_type="Tracks", leaders=top_tracks)
+
 
 @bp.route("/top_users")
 @login_required
@@ -61,19 +66,28 @@ def top_users():
 
     top_users = []
     for user in rows:
-        top_users.append({'name': user['nickname'] or user['name'], 'count': user['count']})
+        top_users.append(
+            {"name": user["nickname"] or user["name"], "count": user["count"]}
+        )
     return render_template("leaderboard.html", lb_type="Users", leaders=top_users)
 
-@bp.route("/search", methods=['GET'])
+
+@bp.route("/search", methods=["GET"])
 @login_required
 def search():
     query = request.args.get("query")
     search_results = []
     if query:
         query_params = {"query": "%" + query + "%"}
-        search_query = 'SELECT t.title, t.artist, t.cue_date, u.name, u.nickname FROM tracks t JOIN users u ON t.user_id = u.id WHERE t.artist LIKE :query OR t.title LIKE :query AND t.cue_date IS NOT NULL ORDER BY t.cue_date DESC LIMIT 50;'
+        search_query = "SELECT t.title, t.artist, t.cue_date, u.name, u.nickname FROM tracks t JOIN users u ON t.user_id = u.id WHERE t.artist LIKE :query OR t.title LIKE :query AND t.cue_date IS NOT NULL ORDER BY t.cue_date DESC LIMIT 50;"
         search_results = db.query(search_query, query_params)
     return render_template("search.html", results=search_results)
+
+
+@bp.route("/login_password", methods=["GET"])
+def login_password():
+    return render_template("login_password.html")
+
 
 @bp.route("/profile")
 @login_required
@@ -81,32 +95,66 @@ def profile():
     user_tracks_query = "SELECT * FROM tracks WHERE user_id = ? AND cue_date IS NOT NULL ORDER BY cue_date DESC LIMIT 50"
     user_tracks = db.query(sql=user_tracks_query, args=[current_user.id])
     user_tracks = [Track(row) for row in user_tracks] if user_tracks is not None else []
+    has_password = (
+        db.query(
+            "SELECT password_hash FROM passwords WHERE id = ?",
+            [current_user.id],
+            one=True,
+        )
+        is not None
+    )
 
     for track in user_tracks:
         d = track.cue_date.date()
         track.cue_date = d
 
-    return render_template("edit_profile.html", user=current_user, tracks=user_tracks)
+    return render_template(
+        "edit_profile.html",
+        user=current_user,
+        tracks=user_tracks,
+        has_password=has_password,
+    )
 
-@bp.route("/latest_db", methods=['GET'])
+
+@bp.route("/latest_db", methods=["GET"])
 @login_required
 def latest_db():
-    path = tempfile.NamedTemporaryFile(suffix='.db')
+    path = tempfile.NamedTemporaryFile(suffix=".db")
     tmp = sqlite3.connect(path.name)
     cur = db.connect()
     cur.backup(tmp)
     tmp.close()
     cur.close()
-    return send_file(path, as_attachment=True, download_name='mcgj-latest.db')
+    return send_file(path, as_attachment=True, download_name="mcgj-latest.db")
 
 
-@bp.route("/update_profile", methods=['POST'])
+@bp.route("/update_profile", methods=["POST"])
 @login_required
 def update_profile():
     user = current_user
     user.nickname = request.form["nickname"] if request.form["nickname"] != "" else None
+    old_pw = request.form["old_password"]
+    old_pw = old_pw if old_pw != "" else None
+    new_pw = request.form["new_password"]
+    new_pw = new_pw if new_pw != "" else None
+    confirm_pw = request.form["confirm_password"]
+    confirm_pw = confirm_pw if confirm_pw != "" else None
+    if old_pw is not None and new_pw is not None and confirm_pw is not None:
+        old_hash = db.query(
+            "SELECT password_hash FROM passwords WHERE id = ?", [user.id], one=True
+        )
+        if old_hash is not None:
+            old_hash = old_hash["password_hash"]
+            if check_password_hash(old_hash, old_pw):
+                if new_pw == confirm_pw:
+                    new_hash = generate_password_hash(new_pw)
+                    db.execute(
+                        "UPDATE passwords SET password_hash = ?, update_date = CURRENT_TIMESTAMP WHERE id = ?",
+                        [new_hash, user.id],
+                    )
     user.update()
-    return redirect(url_for('mcgj.profile'))
+    return redirect(url_for("mcgj.profile"))
+
 
 @bp.route("/sessions/<session_id>")
 def render_session(session_id):
@@ -131,85 +179,129 @@ def render_session(session_id):
                 user_rows = db.query(sql=user_query, args=[track.user_id])
                 # temporarily set person field to canonical user info
                 for user_row in user_rows:
-                    if not user_row['nickname']:
-                        track.person = user_row['name']
+                    if not user_row["nickname"]:
+                        track.person = user_row["name"]
                     else:
-                        track.person = user_row['nickname']
+                        track.person = user_row["nickname"]
 
         unplayed_tracks = [track for track in tracks if track.played != 1]
 
         played_tracks = {}
         for round_num in range(1, session.current_round + 1):
-            round_tracks = [track for track in tracks if track.round_number == round_num]
-            played_tracks[round_num] = sorted([track for track in round_tracks if track.played == 1], key=lambda track: track.cue_date)
+            round_tracks = [
+                track for track in tracks if track.round_number == round_num
+            ]
+            played_tracks[round_num] = sorted(
+                [track for track in round_tracks if track.played == 1],
+                key=lambda track: track.cue_date,
+            )
 
         is_driving = False
-        if 'driving' in client_session:
-            is_driving = client_session['driving'].get(session_id)
+        if "driving" in client_session:
+            is_driving = client_session["driving"].get(session_id)
 
         round_users = [track.user_id for track in played_tracks[session.current_round]]
-        queued_users = list(dict.fromkeys([track.user_id for track in unplayed_tracks if track.user_id not in round_users]))
+        queued_users = list(
+            dict.fromkeys(
+                [
+                    track.user_id
+                    for track in unplayed_tracks
+                    if track.user_id not in round_users
+                ]
+            )
+        )
 
         if session.current_round == 1:
             # first round, go in order that tracks were added in the queue
             next_up_ids = queued_users
         else:
-            prev_round_tracks = sorted([track for track in played_tracks[session.current_round - 1]], key=lambda track: track.cue_date)
+            prev_round_tracks = sorted(
+                [track for track in played_tracks[session.current_round - 1]],
+                key=lambda track: track.cue_date,
+            )
             prev_round_users = [track.user_id for track in prev_round_tracks]
             # start with the order from last round, include anyone in the queue who hasn't gone yet this round
-            initial_order = [user_id for user_id in prev_round_users if user_id not in round_users if user_id in queued_users]
+            initial_order = [
+                user_id
+                for user_id in prev_round_users
+                if user_id not in round_users
+                if user_id in queued_users
+            ]
             # anyone left over in the queue who wasn't in last round
-            newcomers = [user_id for user_id in queued_users if user_id not in initial_order]
+            newcomers = [
+                user_id for user_id in queued_users if user_id not in initial_order
+            ]
             # zipper merge new folks into last round's order
-            next_up_ids = [user_id for user_id in chain.from_iterable(zip_longest(initial_order, newcomers)) if user_id is not None]
+            next_up_ids = [
+                user_id
+                for user_id in chain.from_iterable(
+                    zip_longest(initial_order, newcomers)
+                )
+                if user_id is not None
+            ]
 
         next_up = []
         for user_id in next_up_ids:
             user_rows = db.query(sql=user_query, args=[user_id])
             for user_row in user_rows:
-                if not user_row['nickname']:
-                    next_up.append(user_row['name'])
+                if not user_row["nickname"]:
+                    next_up.append(user_row["name"])
                 else:
-                    next_up.append(user_row['nickname'])
+                    next_up.append(user_row["nickname"])
 
-        return render_template("session_detail.html", session=session, unplayed=unplayed_tracks, played=played_tracks, is_driving=is_driving, next_up=next_up)
+        return render_template(
+            "session_detail.html",
+            session=session,
+            unplayed=unplayed_tracks,
+            played=played_tracks,
+            is_driving=is_driving,
+            next_up=next_up,
+        )
 
     else:
-        return redirect(url_for('auth.session_auth_recurse_redirect', session_id=session_id))
+        return redirect(
+            url_for("auth.session_auth_recurse_redirect", session_id=session_id)
+        )
+
 
 @bp.route("/sessions/latest")
 def renderLatestSession():
     session_query = "SELECT * FROM sessions ORDER BY create_date DESC limit 1"
     session_rows = db.query(sql=session_query)
     for session in session_rows:
-        session_id = session['id']
+        session_id = session["id"]
         break
     if current_user.is_authenticated:
-        return redirect(url_for('mcgj.render_session', session_id=session_id))
+        return redirect(url_for("mcgj.render_session", session_id=session_id))
     else:
-        return redirect(url_for('auth.session_auth_recurse_redirect', session_id=session_id))
+        return redirect(
+            url_for("auth.session_auth_recurse_redirect", session_id=session_id)
+        )
+
 
 @bp.route("/sessions/<session_id>/drive")
 @login_required
 def driveSession(session_id):
-    if 'driving' not in client_session:
-        client_session['driving'] = {}
+    if "driving" not in client_session:
+        client_session["driving"] = {}
 
-    client_session['driving'][session_id] = True
+    client_session["driving"][session_id] = True
     client_session.modified = True
 
-    return redirect(url_for('mcgj.render_session', session_id=session_id))
+    return redirect(url_for("mcgj.render_session", session_id=session_id))
+
 
 @bp.route("/sessions/<session_id>/undrive")
 @login_required
 def undriveSession(session_id):
-    if 'driving' not in client_session:
-        client_session['driving'] = {}
+    if "driving" not in client_session:
+        client_session["driving"] = {}
 
-    client_session['driving'][session_id] = False
+    client_session["driving"][session_id] = False
     client_session.modified = True
 
-    return redirect(url_for('mcgj.render_session', session_id=session_id))
+    return redirect(url_for("mcgj.render_session", session_id=session_id))
+
 
 @bp.route("/sessions/<session_id>/edit")
 @login_required
@@ -221,21 +313,24 @@ def edit_session(session_id):
     - unplayed: A list of all unplayed tracks for this session.
     - played: A dictionary with a key-value pair for each round. The keys are the round numbers, and the values are lists of the tracks, ordered by their cue dates.
     """
-    print("edit {}".format(session_id))
     session = Session(with_id=session_id)
     return render_template("edit_session.html", session=session)
 
 
-@bp.route("/sessions/<session_id>/update", methods=['POST'])
+@bp.route("/sessions/<session_id>/update", methods=["POST"])
 @login_required
 def update_session(session_id):
     """Submit an update to a track"""
     session = Session(with_id=session_id)
     session.name = request.form["name"] if request.form["name"] != "" else None
-    session.spotify_url = request.form["spotify_url"] if request.form["spotify_url"] != "" else None
-    session.current_round = request.form["current_round"] if request.form["current_round"] != "" else None
+    session.spotify_url = (
+        request.form["spotify_url"] if request.form["spotify_url"] != "" else None
+    )
+    session.current_round = (
+        request.form["current_round"] if request.form["current_round"] != "" else None
+    )
     session.update()
-    return redirect(url_for('mcgj.render_session', session_id=session_id))
+    return redirect(url_for("mcgj.render_session", session_id=session_id))
 
 
 @bp.route("/sessions/<session_id>/next_round")
@@ -246,7 +341,7 @@ def next_round(session_id):
     session.current_round += 1
     session.update()
 
-    return redirect(url_for('mcgj.render_session', session_id=session.id))
+    return redirect(url_for("mcgj.render_session", session_id=session.id))
 
 
 # We could make this accept GET, POST (to update) and DELETE methods, and
@@ -265,7 +360,7 @@ def render_edit_track(track_id):
     return render_template("edit_track.html", track=track)
 
 
-@bp.route("/tracks/<track_id>/update", methods=['POST'])
+@bp.route("/tracks/<track_id>/update", methods=["POST"])
 @login_required
 def update_track(track_id):
     """Submit an update to a track"""
@@ -276,7 +371,6 @@ def update_track(track_id):
     sc = services.SpotifyClient()
     bc = services.BandcampClient()
     if sc.isSpotifyTrack(track.url):
-        print("Spotify track detected!")
         spotify_title, spotify_artist, spotify_art_url = sc.getTrackInfo(track.url)
         if not track.title:
             track.title = spotify_title
@@ -284,7 +378,6 @@ def update_track(track_id):
             track.artist = spotify_artist
         track.art_url = spotify_art_url
     elif bc.isBandcampTrack(track.url):
-        print("Bandcamp track detected!")
         bandcamp_title, bandcamp_artist, bandcamp_art_url = bc.getTrackInfo(track.url)
         if not track.title:
             track.title = bandcamp_title
@@ -295,11 +388,14 @@ def update_track(track_id):
         track.art_url = sc.getNonSpotifyArtwork(track)
 
     is_driving = False
-    if 'driving' in client_session and str(track.session_id) in client_session['driving']:
-        is_driving = client_session['driving'][str(track.session_id)]
-    if track.user_id == current_user.id or is_driving == True:
+    if (
+        "driving" in client_session
+        and str(track.session_id) in client_session["driving"]
+    ):
+        is_driving = client_session["driving"][str(track.session_id)]
+    if track.user_id == current_user.id or is_driving:
         track.update()
-    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+    return redirect(url_for("mcgj.render_session", session_id=track.session_id))
 
 
 @bp.route("/tracks/<track_id>/cue")
@@ -315,7 +411,7 @@ def cue_track(track_id):
     track.cue_date = datetime.datetime.now()
 
     track.update()
-    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+    return redirect(url_for("mcgj.render_session", session_id=track.session_id))
 
 
 @bp.route("/tracks/<track_id>/uncue")
@@ -326,7 +422,7 @@ def uncue_track(track_id):
     # Makes a track Unplayed
     track.played = 0
     track.update()
-    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+    return redirect(url_for("mcgj.render_session", session_id=track.session_id))
 
 
 # I felt like this should use the DELETE method but… it doesn't work in HTML forms?
@@ -336,11 +432,14 @@ def delete_track(track_id):
     """Submit an update to a track"""
     track = Track(with_id=track_id)
     is_driving = False
-    if 'driving' in client_session and str(track.session_id) in client_session['driving']:
-        is_driving = client_session['driving'][str(track.session_id)]
-    if track.user_id == current_user.id or is_driving == True:
+    if (
+        "driving" in client_session
+        and str(track.session_id) in client_session["driving"]
+    ):
+        is_driving = client_session["driving"][str(track.session_id)]
+    if track.user_id == current_user.id or is_driving:
         track.delete()
-    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+    return redirect(url_for("mcgj.render_session", session_id=track.session_id))
 
 
 # TODO: New tracks don't need a round number, they'll get one at the time they are added to the current round
@@ -350,17 +449,18 @@ def delete_track(track_id):
 def render_new_track():
     """Create a new track"""
     session = Session(with_id=request.args["session_id"])
-    if 'name' not in client_session:
-        client_session['name'] = ''
-    return render_template("new_track.html", session=session, name=client_session['name'])
+    if "name" not in client_session:
+        client_session["name"] = ""
+    return render_template(
+        "new_track.html", session=session, name=client_session["name"]
+    )
 
 
 # TODO: Could probably be "tracks/insert"
-@bp.route("/insert_track", methods=['POST'])
+@bp.route("/insert_track", methods=["POST"])
 @login_required
 def insert_track():
     """Insert a new track row"""
-    print(request.form)
     track = Track(request.form)
     track.user_id = current_user.id
     # track.session_id = request.form["session_id"]
@@ -370,7 +470,6 @@ def insert_track():
     sc = services.SpotifyClient()
     bc = services.BandcampClient()
     if sc.isSpotifyTrack(track.url):
-        print("Spotify track detected!")
         spotify_title, spotify_artist, spotify_art_url = sc.getTrackInfo(track.url)
         if not track.title:
             track.title = spotify_title
@@ -378,7 +477,6 @@ def insert_track():
             track.artist = spotify_artist
         track.art_url = spotify_art_url
     elif bc.isBandcampTrack(track.url):
-        print("Bandcamp track detected!")
         bandcamp_title, bandcamp_artist, bandcamp_art_url = bc.getTrackInfo(track.url)
         if not track.title:
             track.title = bandcamp_title
@@ -389,9 +487,7 @@ def insert_track():
         track.art_url = sc.getNonSpotifyArtwork(track)
 
     track.insert()
-    print("ID of new track: {}".format(track.id))
-    print(track.__dict__)
-    return redirect(url_for('mcgj.render_session', session_id=track.session_id))
+    return redirect(url_for("mcgj.render_session", session_id=track.session_id))
 
 
 @bp.route("/insert_session")
@@ -400,7 +496,6 @@ def insert_session():
     """Create a new session"""
     sess = Session()
     sess.name = "Recurse MCG {}".format(datetime.date.today().isoformat())
-    sess.date = datetime.date.today()
     sess.current_round = 1
     sess.insert()
-    return redirect(url_for('mcgj.render_session', session_id=sess.id))
+    return redirect(url_for("mcgj.render_session", session_id=sess.id))
