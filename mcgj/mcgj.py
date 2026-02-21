@@ -123,6 +123,10 @@ def latest_db():
     tmp = sqlite3.connect(path.name)
     cur = db.connect()
     cur.backup(tmp)
+    # Downloadable copy of the db should not include auth info about real users
+    with tmp:
+        tmp.execute("DROP TABLE IF EXISTS passwords")
+        tmp.execute("DROP TABLE IF EXISTS oauth")
     tmp.close()
     cur.close()
     return send_file(path, as_attachment=True, download_name="mcgj-latest.db")
