@@ -38,7 +38,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "pytest",
+    "pytest>=9.0",
 ]
 deploy = [
     "gunicorn==20.0.4",
