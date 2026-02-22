@@ -108,9 +108,10 @@ To run a local dev instance of MCGJ:
 - The database is initially empty.  If you're not planning to log in via OAuth,
   you will probably want to create a user account that supports password login:
   ```shell
-  uv run -m flask add-user "My Nickname"
-  # If you're not starting from an empty db, check what the `id` of the newly
-  # created user is and substitute it instead of 1 below
+  uv run -m flask add-user "My Nickname" "My Name"
+  # The above command will print a message giving the id of the newly created
+  # user.  If you start with an empty db, the id will be 1; otherwise,
+  # substitute the printed id instead of 1 below.
   uv run -m flask add-username-password 1 my_username my_password
   ```
 - Run `uv run -m flask run` at the top-level directory of the repo; MCGJ should
