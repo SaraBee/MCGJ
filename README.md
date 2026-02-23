@@ -60,7 +60,7 @@ The following setup instructions are common to both production and local dev:
   In `.env`, set `ROOT_URL` to the URL of this deployment.  This is required
   for all OAuth features, including Spotify integration and OAuth login via
   recurse.com.  If you are going to run a local dev instance, set `ROOT_URL` to
-  the address of the toy web server: `http://localhost:5000`.
+  the address of the toy web server: `http://127.0.0.1:5000`.
 
 - If you want to enable OAuth login via recurse.com, follow the instructions in
   `.env` and uncomment the relevant lines.
