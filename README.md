@@ -89,18 +89,17 @@ MCGJ is a flask app, so to deploy it, you'll want a WSGI server behind a
 reverse proxy and a real HTTP server on the outside.  We recommend gunicorn and
 nginx for this puprose.
 
-- Configure your WSGI server to load your `.env` and start up the app:
-  ```python3
-  from dotenv import load_dotenv
-  from mcgj import create_app
+- See
+  [Flask docs](https://flask.palletsprojects.com/en/stable/deploying/nginx/)
+  for how to configure nginx to act as a reverse proxy that listens on port 80
+  and forwards to port 8000.
 
-  load_dotenv("/path/to/MCGJ/.env")
-  application = create_app()
+- Then run gunicorn listening at port 8000:
+  ```shell
+  uv run --extra deploy gunicorn -w 4 'mcgj:create_app()'
   ```
-
-- Start your web server
-
-That should be it? Check your error log if you run into trouble.
+  The `-w` option sets the number of worker processes; you can adjust it as you
+  see fit.
 
 
 ## Running a local dev instance
