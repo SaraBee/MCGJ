@@ -1,4 +1,5 @@
 import datetime
+from datetime import UTC
 import sqlite3
 import tempfile
 from itertools import chain, zip_longest
@@ -129,7 +130,8 @@ def latest_db():
         tmp.execute("DROP TABLE IF EXISTS oauth")
     tmp.close()
     cur.close()
-    return send_file(path, as_attachment=True, download_name="mcgj-latest.db")
+    timestamp = datetime.datetime.now(UTC).strftime("%Y%m%d_%H%M%S%z")
+    return send_file(path, as_attachment=True, download_name=f"mcgj-{timestamp}.db")
 
 
 @bp.route("/update_profile", methods=["POST"])
