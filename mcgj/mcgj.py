@@ -139,7 +139,8 @@ def update_profile():
     nickname = request.get("nickname")
     if nickname == "":
         nickname = None
-    user.nickname = nickname
+    if nickname is not None:
+        user.nickname = nickname
     old_pw = request.get("old_password")
     if old_pw == "":
         old_pw = None
