@@ -10,7 +10,7 @@
 <br>
 
 <form class="edit-form" method="POST" action="/update_profile">
-  <label for="nickname">Nickname</label><input type="text" name="nickname" value="{{user.nickname if user.nickname != None}}" required>
+  <label for="nickname">Nickname</label><input type="text" name="nickname" value="{{user.nickname if user.nickname != None}}">
   {% if has_password %}
   <label for="old_password">old password</label><input type="password" name="old_password">
   <label for="new_password">new password</label><input type="password" name="new_password">
