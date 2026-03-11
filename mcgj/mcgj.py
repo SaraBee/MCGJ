@@ -136,18 +136,18 @@ def latest_db():
 @login_required
 def update_profile():
     user = current_user
-    nickname = request.get("nickname")
+    nickname = request.form.get("nickname")
     if nickname == "":
         nickname = None
     if nickname is not None:
         user.nickname = nickname
-    old_pw = request.get("old_password")
+    old_pw = request.form.get("old_password")
     if old_pw == "":
         old_pw = None
-    new_pw = request.get("new_password")
+    new_pw = request.form.get("new_password")
     if new_pw == "":
         new_pw = None
-    confirm_pw = request.get("confirm_password")
+    confirm_pw = request.form.get("confirm_password")
     if confirm_pw == "":
         confirm_pw = None
     if old_pw is not None and new_pw is not None and confirm_pw is not None:
