@@ -136,13 +136,20 @@ def latest_db():
 @login_required
 def update_profile():
     user = current_user
-    user.nickname = request.form["nickname"] if request.form["nickname"] != "" else None
-    old_pw = request.form["old_password"]
-    old_pw = old_pw if old_pw != "" else None
-    new_pw = request.form["new_password"]
-    new_pw = new_pw if new_pw != "" else None
-    confirm_pw = request.form["confirm_password"]
-    confirm_pw = confirm_pw if confirm_pw != "" else None
+    nickname = request.get("nickname")
+    if nickname == "":
+        nickname = None
+    if nickname is not None:
+        user.nickname = nickname
+    old_pw = request.get("old_password")
+    if old_pw == "":
+        old_pw = None
+    new_pw = request.get("new_password")
+    if new_pw == "":
+        new_pw = None
+    confirm_pw = request.get("confirm_password")
+    if confirm_pw == "":
+        confirm_pw = None
     if old_pw is not None and new_pw is not None and confirm_pw is not None:
         old_hash = db.query(
             "SELECT password_hash FROM passwords WHERE id = ?", [user.id], one=True
