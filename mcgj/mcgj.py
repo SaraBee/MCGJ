@@ -334,9 +334,6 @@ def update_session(session_id):
     """Submit an update to a track"""
     session = Session(with_id=session_id)
     session.name = request.form["name"] if request.form["name"] != "" else None
-    session.spotify_url = (
-        request.form["spotify_url"] if request.form["spotify_url"] != "" else None
-    )
     session.current_round = (
         request.form["current_round"] if request.form["current_round"] != "" else None
     )
